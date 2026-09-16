@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     lineage-sdk device overlay for the Meizu M5s.
+
+     config_deviceHardwareKeys is a bit field:
+       1 Home, 2 Back, 4 Menu, 8 Assist, 16 AppSwitch, 32 Camera, 64 Volume.
+
+     The M5s has ONE physical key on the front — the mBack/mTouch home button
+     built into the Goodix fingerprint module — plus the volume rocker.  That
+     is 1 (Home) + 64 (Volume) = 65.  This differs from the m5c, which has
+     three capacitive keys and uses 71.
+
+     FACT for the "one key" part: the stock keylayout set carried in this tree
+     (configs/keylayout/) has mtk-kpd.kl and gf-keys.kl, and the 15.1 tree's
+     own note reads "Physical mBack click is mtk-kpd key 102. Keep light Goodix
+     touch as Back-only".
+     HYPOTHESIS for the bit value: 65 has never been observed working on this
+     handset — no forge image has ever booted on it.  If hardware keys behave
+     wrongly on the first boot, this integer is the first knob.
+
+     config_longPressOnHomeBehavior=2 is carried verbatim from the 15.1 tree
+     (long-press Home -> Recents), and the name was verified to still exist in
+     lineage-sdk/lineage/res/res/values in this tree.
+-->
+<resources>
+    <integer name="config_deviceHardwareKeys">65</integer>
+    <integer name="config_longPressOnHomeBehavior">2</integer>
+</resources>

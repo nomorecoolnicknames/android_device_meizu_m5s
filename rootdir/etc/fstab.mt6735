@@ -1,0 +1,62 @@
+# fstab.mt6735 — Meizu M5s (m5s, M1612), LineageOS 20.0 / Android 13.
+#
+# Derived from the fstab of the LOS 15.1 tree built for this handset
+# (device/meizu/m5s/rootdir/fstab.mt6735) with the Android-13 changes the m5c
+# lane already worked out:
+#
+#  1. first_stage_mount on /system and /vendor.  A13 init has no "mount
+#     /system later from init.rc" mode any more; DoFirstStageMount() must bring
+#     both up and then SwitchRoot() into /system.
+#  2. /vendor is a REAL partition on `custom`.
+#     FACT: custom = mmcblk0p17, 524 288 KiB = 512 MiB
+#     (/srv/forge/android/m5s/probe/partitions.txt), already an ext4 filesystem
+#     mounted by the STOCK firmware as /custom
+#     ("…/by-name/custom /custom ext4 ro,seclabel,relatime",
+#      /srv/forge/android/m5s/probe/proc_mounts.txt).
+#  3. forceencrypt dropped from /data.  A13 uses file-based encryption; the
+#     Marshmallow-era forceencrypt= syntax is not accepted, and metadata
+#     encryption on this kernel is untested.  encryptable=footer keeps the door
+#     open without forcing anything at first boot.
+#  4. /persist is absent — the m5s GPT has no persist partition (FACT: stock
+#     scatter MT6753_M1612_scatter.txt has no such entry).
+#
+# The by-name directory is resolved at runtime; partition NUMBERS are never
+# written here on purpose (project rule after the p10/expdb near-miss).
+# FACT: the full node path below is the one the stock install actually uses
+# (probe/proc_mounts.txt); the short mtk-msdc.0/by-name form exists only as an
+# init-created symlink alias.
+#
+# <src>                                                                        <mnt_point>  <type>  <mnt_flags and options>                                               <fs_mgr_flags>
+
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/system                   /system      ext4    ro,barrier=1                                                          wait,first_stage_mount
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/custom                   /vendor      ext4    ro,barrier=1                                                          wait,first_stage_mount
+
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/userdata                 /data        ext4    noatime,nosuid,nodev,noauto_da_alloc,discard                           wait,check,encryptable=footer
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/cache                    /cache       ext4    noatime,nosuid,nodev,noauto_da_alloc,discard                           wait,check
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/metadata                 /metadata    ext4    noatime,nosuid,nodev,discard                                          wait,formattable,first_stage_mount
+
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/protect1                 /protect_f   ext4    noatime,nosuid,nodev,noauto_da_alloc,commit=1,nodelalloc               wait,check,formattable
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/protect2                 /protect_s   ext4    noatime,nosuid,nodev,noauto_da_alloc,commit=1,nodelalloc               wait,check,formattable
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/nvdata                   /nvdata      ext4    noatime,nosuid,nodev,noauto_da_alloc,discard                           wait,check,formattable
+
+# Removable / OTG
+/devices/mtk-msdc.0/11240000.msdc1*                                            auto         auto    defaults                                                              voldmanaged=sdcard1:auto
+/devices/platform/mt_usb*                                                      auto         vfat    defaults                                                              voldmanaged=usbotg:auto
+
+# Raw partitions the framework / recovery want to know about by name
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/frp                      /persistent  emmc    defaults                                                              defaults
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/nvram                    /nvram       emmc    defaults                                                              defaults
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/proinfo                  /proinfo     emmc    defaults                                                              defaults
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/lk                       /bootloader  emmc    defaults                                                              defaults
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/para                     /misc        emmc    defaults                                                              defaults
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/boot                     /boot        emmc    defaults                                                              defaults
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/recovery                 /recovery    emmc    defaults                                                              defaults
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/logo                     /logo        emmc    defaults                                                              defaults
+# expdb (p10, 10 MiB) is the post-mortem evidence channel on this device, the
+# same number as on the m5c (FACT: factbase mt6753_mt6737.md §2.2).
+# Listed so tools can find it by name; never write to it.
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/expdb                    /expdb       emmc    defaults                                                              defaults
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/secro                    /secro       emmc    defaults                                                              defaults
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/seccfg                   /seccfg      emmc    defaults                                                              defaults
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/tee1                     /tee1        emmc    defaults                                                              defaults
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/tee2                     /tee2        emmc    defaults                                                              defaults

@@ -1,0 +1,57 @@
+<!--
+  Device HAL manifest (VINTF) for the Meizu M5s on LineageOS 20.0.
+
+  Why this file exists.  Without a DEVICE_MANIFEST_FILE there is no
+  /vendor/etc/vintf/manifest.xml and hwservicemanager answers getTransport()
+  with EMPTY for every vendor HAL.  Most clients survive that: system/libhidl's
+  getRawServiceInternal() only warns on an undeclared interface and still tries
+  hwbinder, then passthrough.
+
+  Wi-Fi is the exception.  frameworks/opt/net/wifi HalDeviceManager decides
+  whether a vendor HAL exists at all by asking the manifest directly:
+
+      isSupportedInternal():
+          IServiceManager.getTransport(IWifi.kInterfaceName, "default")
+              != Transport.EMPTY
+
+  With no manifest that returns EMPTY, WifiNative logs "Vendor Hal not
+  supported, ignoring start", IWifi.start() is never called, and
+  wifi_load_driver() never writes "1" into WIFI_DRIVER_STATE_CTRL_PARAM
+  (/dev/wmtWifi).  The MTK combo driver therefore never powers up and wlan0 is
+  never created.  Measured on the sibling m5c's live LOS 16 install 2026-09-03
+  (M5C_LOS16_PERIPHERALS_MEASURE_20260903.md); the m5s runs the same CONSYS
+  MT6735 combo and the same control path.
+
+  Scope is deliberately narrow.  A HAL declared here but not actually served
+  hangs its client (the m681 light@2.0 lesson).  The LOS 15.1 tree for this
+  handset ships a 7.3 KB manifest listing a dozen HALs; that set is NOT copied
+  here, because on this port none of those services is wired yet (see the
+  "NOT WIRED YET" block in device.mk).  Add an entry only together with
+  runtime proof that the service answers.
+
+  OPEN, and stated rather than hidden: even these two entries are a HYPOTHESIS
+  on the m5s.  On the m5c they were justified by lshal output from a running
+  device; the m5s has never booted a forge image, so nothing here has been
+  observed registered.  If the first boot hangs in WifiService, this file is
+  the first thing to empty out.
+-->
+<manifest version="1.0" type="device">
+    <hal format="hidl">
+        <name>android.hardware.wifi</name>
+        <transport>hwbinder</transport>
+        <version>1.2</version>
+        <interface>
+            <name>IWifi</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="hidl">
+        <name>android.hardware.wifi.supplicant</name>
+        <transport>hwbinder</transport>
+        <version>1.1</version>
+        <interface>
+            <name>ISupplicant</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+</manifest>

@@ -1,0 +1,58 @@
+#
+# system.prop for the Meizu M5s (m5s, M1612) — LineageOS 20.0
+#
+# Only framework-side / system-partition properties belong here.  MTK hardware
+# knobs live in vendor.prop (TARGET_VENDOR_PROP).
+#
+# Deliberately NOT carried from the LOS 15.1 system.prop that was written for
+# this handset:
+#   ro.zygote=zygote64
+#     -> core_64_bit.mk sets zygote64_32 and the import of init.${ro.zygote}.rc
+#        resolves while init.rc is parsed, i.e. before any prop FILE is read.
+#        Setting it here cannot work and can only disagree with reality.
+#   ro.product.* (brand/model/name/device/board)
+#     -> generated from PRODUCT_* by build/make/core/sysprop.mk:40-50 as
+#        ro.product.system.*; repeating them is a duplicate-sysprop error in
+#        Android 13 unless BUILD_BROKEN_DUP_SYSPROP is set.
+#   debug.hwui.render_dirty_regions
+#     -> no such knob exists in hwui.  FACT: the only partial-update property
+#        in this tree is debug.hwui.use_partial_updates
+#        (frameworks/base/libs/hwui/Properties.h:124).  Worth knowing: the m5c
+#        lane's vendor.prop spells it "debug.hwui.partial_updates", which is
+#        also not a name this tree knows.
+#   ro.sys.sdcardfs=false
+#     -> sdcardfs is gone in Android 13; external storage is FUSE/MediaProvider.
+#   dalvik.vm.heapgrowthlimit / heapsize
+#     -> come from the inherited phone-xhdpi-2048-dalvik-heap.mk in device.mk.
+#        Setting them twice is how the m95 port silently kept a wrong value.
+
+# Display density for a 720x1280 panel.  FACT: probe/getprop.txt
+# ro.sf.lcd_density=320 on the live stock install.
+ro.sf.lcd_density=320
+
+# The m5s has a single mBack/mTouch home button on the Goodix FP module.
+# Whether the kernel delivers touch-as-Back key events on this port is
+# unverified (HYPOTHESIS), so the software navbar stays enabled for bring-up.
+qemu.hw.mainkeys=0
+
+# GLES 3.1 (Mali-T720 MP3).  Value carried from the LOS 15.1 tree for this
+# handset (0x30001).
+ro.opengles.version=196609
+
+# Tethering
+net.tethering.noprovisioning=true
+
+# Media / DRM: Widevine in this blob set is L3 and 32-bit only
+# (LOS15_VENDOR_BLOBS.md: "DRM Widevine 5 files, L3, только 32-bit").
+drm.service.enabled=true
+
+# HWUI on Mali-T720 + HWC1.
+# FACT that this line encodes, measured on the sibling m2note (same SoC, same
+# Mali-T720, same HWC1 stack, 2026-07-02): debug.hwui.use_buffer_age=true
+# bootlooped the device — full-ROM flash hung ~160 s then wdt-rebooted;
+# reverting the single variable to false booted clean and held >500 s uptime.
+# FACT that the property is real in Android 13:
+# frameworks/base/libs/hwui/Properties.h:117 PROPERTY_USE_BUFFER_AGE.
+# INFERENCE: the same EGL_EXT_buffer_age path is unsafe on m5s; this is the
+# cheap insurance, not a measurement on m5s itself.
+debug.hwui.use_buffer_age=false
