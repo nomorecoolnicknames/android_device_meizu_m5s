@@ -5,6 +5,60 @@
 # (single path when both are equal). Regenerate the vendor tree with
 # device/meizu/m5s/extract-files.sh <path-to-stock-system-dump>
 # 501 blobs
+#
+# BLOB AUDIT 2026-09-16 (fleet hygiene pass): NOTHING REMOVED — measured, not
+# skipped.
+#
+# METHOD.  All 501 destinations of this list were intersected with every
+# install destination Soong wrote for this product
+# (/srv/forge/android/los20-out/out-hyg-m5s/soong/installs-lineage_m5s.mk,
+# 30053 destinations, from `m nothing` for lineage_m5s, rc=0 —
+# /srv/forge/android/meizu-fleet/verify-m5s-ns.log), then again by basename to
+# catch a blob shadowing an A13 module in a different directory.  The question
+# was: which line names a file A13 builds from source, so that the
+# PRODUCT_COPY_FILES rule in vendor/meizu/m5s/m5s-vendor-blobs.mk silently wins
+# over the built module (build/make/core/Makefile:72 vs base_rules.mk:533)?
+#
+# RESULT — one destination, and it is a keeper:
+#   lib64/hw/fingerprint.default.so:vendor/lib64/hw/fingerprint.default.so
+#     A13 builds hardware/libhardware/modules/fingerprint/fingerprint.default
+#     into exactly that path, and kati says so:
+#     "overriding commands for target .../vendor/lib64/hw/fingerprint.default.so"
+#     (verify-m5s-ns.log, line 637).
+#     THE BLOB STAYS.  FACT: proprietary/vendor/lib64/hw/fingerprint.default.so
+#     is the Goodix vendor HAL — .name "Goodix Fingerprint HAL", DT_NEEDED
+#     libgf_hal.so / libgf_ca.so / libgoodixfingerprintd_binder.so, 137192
+#     bytes, "GCC: (GNU) 4.9 20140827/20150123 (prerelease)".  AOSP's
+#     fingerprint.default is the do-nothing "Demo Fingerprint HAL"
+#     (hardware/libhardware/modules/fingerprint/fingerprint.c:120).  There is
+#     no 32-bit counterpart in the dump, which is why only lib64 collides.
+#
+# THE OTHER THREE KATI COLLISIONS IN THAT LOG ARE OURS, NOT AOSP's:
+#   vendor/lib{,64}/libdpframework.so, libgralloc_extra.so, libaudiocustparam.so
+#     — vendor/meizu/m5s/Android.mk declares each of them as a BUILD_PREBUILT
+#     module (things link them by name) while m5s-vendor-blobs.mk also copies
+#     them.  Both rules install THE SAME BYTES from the same file, so the
+#     collision is cosmetic; the module must stay because it is what makes the
+#     name resolvable at link time.  Left exactly as it is — see the header of
+#     vendor/meizu/m5s/Android.mk.
+#
+# NEAR MISSES, checked and left alone:
+#   lib{,64}/libperfservicenative.so:vendor/lib{,64}/libperfservicenative.so
+#     — this used to be a real collision, and the only reason it is not one now
+#     is the Soong namespace work of the same day: before device/meizu/m95/
+#     Android.bp existed, a plain `m nothing` for lineage_m5s carried 51
+#     install-rule lines for 27 modules of device/meizu/m95, and TWO of them
+#     landed on these very paths (the `stem:` of libm95shim_perfservice — a
+#     name-only grep does not find it).  Post-isolation the leak count is 0
+#     (verify-m5s-ns.out), so the blob is unopposed.  It stays.
+#   lib{,64}/libcamera_metadata.so:vendor/lib{,64}/libcamera_metadata.so — A13
+#     builds system/media/camera/libcamera_metadata into system/lib{,64}/ and
+#     into the VNDK apex, never into vendor/lib{,64}/.  This tree leaves
+#     BOARD_VNDK_VERSION unset (BoardConfig.mk), so there is no VNDK rule to
+#     violate either.
+#   etc/bluetooth/bt_{did,stack}.conf:vendor/etc/bluetooth/... — A13 installs
+#     its own copies to system/etc/bluetooth/ and inside
+#     com.android.btservices; the vendor path is untouched by A13.
 
 # Graphics (Mali T720 GPU, gralloc, hwcomposer, PQ/AAL, ion/m4u)
 bin/aal:vendor/bin/aal
