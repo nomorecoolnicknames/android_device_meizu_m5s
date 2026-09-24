@@ -283,8 +283,11 @@ PRODUCT_PACKAGES += \
 
 # Sensors / lights / vibrator / memtrack / power: generic AOSP passthrough
 # services over the legacy hw modules.  Every one of sensors.mt6753.so,
-# power.mt6753.so exists in the vendor set (the vibrator and memtrack claims
-# of this line did not hold — see the 2026-09-25 note below the list).
+# ... exist in the vendor set.  CORRECTION 2026-09-25 (FACT): of the three
+# named, only sensors.mt6753.so is in m5s-vendor-blobs.mk — there is no
+# power.*, vibrator.* or memtrack.* file in proprietary/ at all (find), so
+# ro.hardware.power=mt6753 in vendor.prop points at nothing; the vibrator and
+# memtrack consequences are in the note below the list.
 # NOT MEASURED on A13: unlike the m5c, this blob set has never had a
 # symbol-closure run (blobsym.py) against any Android version.  Treat all five
 # as HYPOTHESIS.
