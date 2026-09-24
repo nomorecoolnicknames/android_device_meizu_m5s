@@ -283,7 +283,8 @@ PRODUCT_PACKAGES += \
 
 # Sensors / lights / vibrator / memtrack / power: generic AOSP passthrough
 # services over the legacy hw modules.  Every one of sensors.mt6753.so,
-# power.mt6753.so and the vibrator blob exists in the vendor set.
+# power.mt6753.so exists in the vendor set (the vibrator and memtrack claims
+# of this line did not hold — see the 2026-09-25 note below the list).
 # NOT MEASURED on A13: unlike the m5c, this blob set has never had a
 # symbol-closure run (blobsym.py) against any Android version.  Treat all five
 # as HYPOTHESIS.
@@ -294,7 +295,23 @@ PRODUCT_PACKAGES += \
     android.hardware.light@2.0-service \
     android.hardware.vibrator@1.0-impl \
     android.hardware.vibrator@1.0-service \
-    android.hardware.memtrack@1.0-service
+    vibrator.default
+
+# 2026-09-25, Treble: every service above is declared in manifest.xml, so it
+# must actually be able to serve (a declared-but-unserved HAL hangs its
+# client).  FACT (ls of the blob list, m5s-vendor-blobs.mk): the only legacy hw
+# modules in this set are audio.primary, camera, fingerprint.default,
+# gatekeeper, gps, gralloc, hwcomposer, keystore, lights, mmsdk, sensors —
+# there is NO vibrator.* and NO memtrack.* module, and the @1.0 impls load
+# exactly those via hw_get_module (hardware/interfaces/vibrator/1.0/default/
+# Vibrator.cpp:72, memtrack/1.0/default/Memtrack.cpp:77).
+#  * vibrator.default — the AOSP module (hardware/libhardware/modules/vibrator,
+#    proprietary: true) that drives /sys/class/timed_output/vibrator/enable.
+#    HYPOTHESIS: the 4.9 MTK vibrator driver exposes timed_output; check
+#    `ls /sys/class/timed_output/vibrator` on first boot.
+#  * memtrack@1.0-service is DROPPED: with no memtrack module it can only exit,
+#    and under Treble it must not be declared either.  A13's memtrack client
+#    treats an undeclared HAL as absent.
 
 # Camera: camera.mt6753.so is a HAL1 module; provider@2.4's default impl wraps
 # it.  Both -impl and -service are required — the service binary is only the
