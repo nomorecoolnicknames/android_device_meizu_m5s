@@ -138,3 +138,21 @@ ro.frp.pst=/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/frp
 ro.oem_unlock_supported=1
 ro.mtk_cta_set=1
 sys.ipo.pwrdncap=2
+
+# --- VINTF: kernel check at boot (m95 lesson 4, cc14611) -------------------
+# Treble turns on Build.isBuildConsistent() -> VintfObject.verifyWithoutAvb()
+# (frameworks/base/core/java/android/os/Build.java:1254, gated on
+# IS_TREBLE_ENABLED); a failed kernel check there raises the "internal problem
+# with your device" dialog on every boot.  This device fails it:
+# FACT (config fragments kernel/configs/p/android-4.9/android-base*.config —
+# the 4.9 entry of FCM 3, the target-level of manifest.xml — checked line by
+# line on 2026-09-25): BOTH prebuilts, E0 (/home/n8n/m5s_out/kernel49/.config)
+# and -a13 (meizu-fleet/kernels/artifacts/m5s-4.9-a13/ikconfig-new.txt), miss
+# exactly the same four: CONFIG_USB_CONFIGFS_F_ACC, _F_AUDIO_SRC, _F_FS,
+# _F_MIDI.  This kernel runs the legacy android gadget instead
+# (CONFIG_USB_G_ANDROID=y, CONFIG_USB_F_FS=y).
+# The property skips only the RuntimeInfo (kernel) half of the check; the HAL
+# and manifest checks stay on (frameworks/base branch meizu-legacy-vendor,
+# 2b2698c85a72, core/jni/android_os_VintfObject.cpp:97-110).
+# Remove it once the kernel carries the four configfs functions.
+ro.vendor.vintf.legacy_kernel=true
