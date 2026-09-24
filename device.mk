@@ -356,6 +356,14 @@ PRODUCT_PROPERTY_OVERRIDES += \
 #    binary.  Until then wlan0 cannot come up — and manifest.xml already
 #    declares IWifi, so this is a real blocker (a declared but unserved HAL
 #    hangs its client — the m681 light@2.0 lesson).
+#    CORRECTION 2026-09-25 (FACT): the standalone service DOES exist, as a
+#    kati module — hardware/interfaces/wifi/1.6/default/Android.mk:96
+#    (LOCAL_MODULE := android.hardware.wifi@1.0-service), and m95 installs it.
+#    It links the static libwifi-hal, which for BOARD_WLAN_DEVICE := MediaTek
+#    is libwifi-hal-mt66xx (frameworks/opt/net/wifi/libwifi_hal/Android.mk:
+#    123-125); m95 builds its own (device/meizu/m95/wifi_hal).  The service
+#    ships a VINTF fragment (IWifi 1.6): when it is wired, drop the IWifi 1.2
+#    entry from manifest.xml in the same change.
 # 2. lib_driver_cmd_mt66xx / libwifi-hal-mt66xx come from vendor/mediatek,
 #    which is not in this tree.  libwpa_client does not exist in A13 at all.
 # 3. Telephony.  The blob set has 78 RIL/modem files including mtk-ril.so and
