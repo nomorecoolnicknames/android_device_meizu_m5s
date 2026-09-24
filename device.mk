@@ -86,7 +86,8 @@ PRODUCT_COPY_FILES += \
 # Init fragment with the m95 NVRAM lessons (see the file header for why it is
 # safe to carry ahead of the rc lane — NOT WIRED YET below).
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/rootdir/etc/init/init.m5s.nvram.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.m5s.nvram.rc
+    $(LOCAL_PATH)/rootdir/etc/init/init.m5s.nvram.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.m5s.nvram.rc \
+    $(LOCAL_PATH)/rootdir/m5s-bdaddr.sh:$(TARGET_COPY_OUT_VENDOR)/bin/m5s-bdaddr.sh
 
 # ---------------------------------------------------------------------------
 # Input

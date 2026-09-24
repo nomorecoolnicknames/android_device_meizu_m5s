@@ -28,3 +28,29 @@ on post-fs-data
     mkdir /data/nvram 0771 root system
     copy /vendor/etc/fstab.mt6735 /data/nvram/fstab.mt6735
     chmod 0644 /data/nvram/fstab.mt6735
+
+# Bluetooth address from NVRAM (m95 lesson, device/meizu/m95 15d2dc9).
+# The AOSP BT HAL of this tree aborts with "No Bluetooth Address!" unless an
+# address property is set (hardware/interfaces/bluetooth/1.0/default/
+# vendor_interface.cc:217); m5s-bdaddr.sh publishes the NVRAM one as
+# persist.service.bdroid.bdaddr.  The HAL (user bluetooth) also reads BT_Addr
+# itself through libnvram (FACT: libbluetooth_mtk.so NEEDED libnvram.so),
+# hence the regroup.  Both wait for NVRAM's own Ready flag: nvram_daemon
+# restores BT_Addr only after post-fs-data, and on m95 the publisher, started
+# earlier, found no file on a fresh /data and the HAL aborted ("Open: No
+# Bluetooth Address!", tombstone_18).
+# No seclabel and no domain yet: in permissive mode init only logs the missing
+# transition and runs the script in init's domain
+# (system/core/init/service.cpp:97-100).  An enforcing build needs a domain,
+# as m95 has (seclabel u:r:m95_bdaddr:s0).
+service m5s_bdaddr /vendor/bin/sh /vendor/bin/m5s-bdaddr.sh
+    class core
+    user root
+    group root bluetooth
+    oneshot
+    disabled
+
+on property:service.nvram_init=Ready
+    chown root bluetooth /data/nvram/APCFG/APRDEB/BT_Addr
+    chmod 0660 /data/nvram/APCFG/APRDEB/BT_Addr
+    start m5s_bdaddr
