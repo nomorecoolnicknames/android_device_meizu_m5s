@@ -60,6 +60,10 @@ $(call inherit-product-if-exists, vendor/meizu/m5s/m5s-vendor.mk)
 #    libsource.so imports under exactly that mangled name (nm -D).  Still
 #    missing for libsource.so: the N-form getCameraInfo(int, android::CameraInfo*)
 #    (…13getCameraInfoEiPNS_10CameraInfoE) — design doc §5, wall (b).
+#  * libtinycompress, libtinyxml — both vendor: true (external/tinycompress,
+#    external/tinyxml); NEEDed by audio.primary.mt6753.so (lib and lib64),
+#    audit of the audio HAL closure, designs/treble-m5s-m2note/keyroots.txt.
+#    m95 installs libtinycompress for the same reason.
 #  * librilutils — vendor: true in hardware/ril/librilutils; NEEDed by mtkrild
 #    and the RIL closure (8).
 PRODUCT_PACKAGES += \
@@ -67,6 +71,8 @@ PRODUCT_PACKAGES += \
     libgui_vendor \
     libm5sshim_gui \
     libcamera_client_vendor \
+    libtinycompress \
+    libtinyxml \
     librilutils
 
 # HALs the framework compatibility matrix of target-level 3 marks
