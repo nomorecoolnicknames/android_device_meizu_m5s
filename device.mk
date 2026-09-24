@@ -37,6 +37,39 @@ PRODUCT_SOONG_NAMESPACES += \
 $(call inherit-product-if-exists, vendor/meizu/m5s/m5s-vendor.mk)
 
 # ---------------------------------------------------------------------------
+# Full Treble: vendor-side copies of libraries the blobs NEED
+# ---------------------------------------------------------------------------
+# With Treble (BoardConfig.mk) a vendor process sees only /vendor, LLNDK and
+# public VNDK.  FACT (meizu-fleet/tools/treble_blob_audit.py over
+# m5s-vendor-blobs.mk, VNDK 33 lists of the m95 build, 2026-09-25): 323 of 441
+# vendor ELFs had an unresolved closure, 34 missing sonames.  The entries below
+# are the ones Android 13 can build for /vendor from source; with them the
+# same audit gives 299 / 31.  What remains (libnativehelper, libfs_mgr,
+# libandroid_runtime, libmedia, libskia, ... and GPU in sphal) is the shim
+# lane: designs/TREBLE_M5S_M2NOTE_20260924.md §4.
+#
+#  * libstdc++.vendor — bionic's small libstdc++ (bionic/libc/Android.bp,
+#    vendor_available: true); 157 closures, the largest single gap (m95 has the
+#    same line for its Mali closure).
+#  * libgui_vendor + libm5sshim_gui — libgui.so for 113 closures, m95 lesson 6
+#    (shims/Android.bp says why a forwarder and not a copy).
+#  * libcamera_client_vendor — m95 lesson 7: the vendor build of
+#    libcamera_client (stem libcamera_client, frameworks/av branch
+#    meizu-legacy-vendor), 83 closures.  It also carries
+#    Camera::connectLegacy(int, int, const String16&, int, sp<Camera>&), which
+#    libsource.so imports under exactly that mangled name (nm -D).  Still
+#    missing for libsource.so: the N-form getCameraInfo(int, android::CameraInfo*)
+#    (…13getCameraInfoEiPNS_10CameraInfoE) — design doc §5, wall (b).
+#  * librilutils — vendor: true in hardware/ril/librilutils; NEEDed by mtkrild
+#    and the RIL closure (8).
+PRODUCT_PACKAGES += \
+    libstdc++.vendor \
+    libgui_vendor \
+    libm5sshim_gui \
+    libcamera_client_vendor \
+    librilutils
+
+# ---------------------------------------------------------------------------
 # Screen: 720x1280, density 320 -> xhdpi
 # ---------------------------------------------------------------------------
 # FACT: /srv/forge/android/m5s/probe/display.txt "Physical size: 720x1280",
