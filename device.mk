@@ -308,6 +308,13 @@ PRODUCT_PROPERTY_OVERRIDES += \
 #    on this one: if mtk-ril.so exports only RIL_InitSocket and not RIL_Init,
 #    the AOSP rild can never host it.  Command to settle it:
 #      readelf --dyn-syms vendor/meizu/m5s/proprietary/vendor/lib64/mtk-ril.so | grep RIL_
+#    SETTLED 2026-09-24 (FACT, nm -D --defined-only): both
+#    proprietary/vendor/lib{,64}/mtk-ril.so export RIL_InitSocket and NO
+#    RIL_Init (DT_NEEDED librilmtk.so, librilutils.so) — same generation as
+#    m5c and m2note.  So the m95 telephony scheme (hardware/ril branch
+#    meizu-legacy-vendor, BOARD_USES_MTK_LEGACY_RIL + librilmtk + a renamed
+#    librilimp, device/meizu/m95 7c49535/2922847) does not apply: its rild
+#    loads mtk-ril.so and calls RIL_Init, as m95's own mtk-ril.so exports.
 # 4. LD shims.  The LOS 15.1 tree declared a 13-entry TARGET_LD_SHIM_LIBS
 #    (libmtkshim_gui / _audio / _camera / _binder / _ui).  The MECHANISM
 #    survives on LOS 20 (vendor/lineage/config/BoardConfigSoong.mk:45,109 ->
