@@ -83,6 +83,11 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/etc/fstab.mt6735:$(TARGET_COPY_OUT_RAMDISK)/fstab.mt6735 \
     $(LOCAL_PATH)/rootdir/etc/fstab.mt6735:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.mt6735
 
+# Init fragment with the m95 NVRAM lessons (see the file header for why it is
+# safe to carry ahead of the rc lane — NOT WIRED YET below).
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/etc/init/init.m5s.nvram.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.m5s.nvram.rc
+
 # ---------------------------------------------------------------------------
 # Input
 # ---------------------------------------------------------------------------
@@ -308,6 +313,11 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # 6. rootdir rc files (init.mt6735.rc, ueventd.mt6735.rc, mtk_agpsd.rc, the
 #    three m5s-*.sh helpers).  The 15.1 set is Nougat/Oreo init syntax; A13
 #    init rejects several of those constructs outright.  Separate lane.
+#    Carried ahead of that lane: rootdir/etc/init/init.m5s.nvram.rc (m95
+#    NVRAM lessons, 2026-09-24).  It creates /data/nvram as a real directory
+#    (the 15.1 layout: a mirror of /nvdata, never a symlink) and copies
+#    fstab.mt6735 into it at post-fs-data; start nvram_daemon after that
+#    (the 15.1 rc starts it `on boot`, which is later — fine).
 # 7. Fingerprint (Goodix).  Blobs exist; no HAL, no permission XML, no
 #    manifest entry.  Deliberate — see the permissions block above.
 # 8. recovery/TWRP — this tree does nothing with recovery.img beyond the
