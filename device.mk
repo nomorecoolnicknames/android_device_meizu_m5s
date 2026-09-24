@@ -143,6 +143,12 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/thermal/ht120.mtc:$(TARGET_COPY_OUT_VENDOR)/etc/.tp/.ht120.mtc \
     $(LOCAL_PATH)/configs/agps_profiles_conf2.xml:$(TARGET_COPY_OUT_VENDOR)/etc/agps_profiles_conf2.xml
 
+# wpa_supplicant service with the AIDL interface name the A13 framework asks
+# for (m95 lesson 161682f; nothing else in this image defines the service —
+# see the header of that rc).
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/etc/init/init.m5s.wifi.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.m5s.wifi.rc
+
 # ---------------------------------------------------------------------------
 # Permissions — only hardware that exists on this unit
 # ---------------------------------------------------------------------------
@@ -314,7 +320,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # 6. rootdir rc files (init.mt6735.rc, ueventd.mt6735.rc, mtk_agpsd.rc, the
 #    three m5s-*.sh helpers).  The 15.1 set is Nougat/Oreo init syntax; A13
 #    init rejects several of those constructs outright.  Separate lane.
-#    Carried ahead of that lane: rootdir/etc/init/init.m5s.nvram.rc (m95
+#    Carried ahead of that lane: rootdir/etc/init/init.m5s.wifi.rc
+#    (wpa_supplicant with the AIDL interface; do not port a second
+#    `service wpa_supplicant`) and rootdir/etc/init/init.m5s.nvram.rc (m95
 #    NVRAM lessons, 2026-09-24).  It creates /data/nvram as a real directory
 #    (the 15.1 layout: a mirror of /nvdata, never a symlink) and copies
 #    fstab.mt6735 into it at post-fs-data; start nvram_daemon after that
