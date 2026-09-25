@@ -341,9 +341,18 @@ PRODUCT_PACKAGES += \
 # GNSS: the legacy gps.h HAL behind the AOSP gnss@1.0 passthrough service.
 # ro.hardware.gps=mt6753 (vendor.prop) selects gps.mt6753.so, which is in the
 # blob set.
-PRODUCT_PACKAGES += \
-    android.hardware.gnss@1.0-impl \
-    android.hardware.gnss@1.0-service
+# 2026-09-25, Treble: NOT installed for now (the rest of this note stays true
+# for the day it comes back).  Under Treble the service would have to be
+# declared in manifest.xml, and a declared HAL that cannot register hangs its
+# client: system_server's GNSS JNI calls the blocking IGnss_V1_0::getService()
+# (frameworks/base/services/core/jni/gnss/Gnss.cpp:165).  It cannot register:
+# FACT (meizu-fleet/designs/treble-m5s-m2note/keyroots.txt) the closure of
+# gps.mt6753.so in the vendor namespace misses libandroid_runtime.so and
+# libnativehelper.so.  Re-add both lines AND the manifest entry once the shim
+# lane provides those two.
+#PRODUCT_PACKAGES += \
+#    android.hardware.gnss@1.0-impl \
+#    android.hardware.gnss@1.0-service
 
 # Audio: the generic multi-version HIDL audio service.
 PRODUCT_PACKAGES += \
