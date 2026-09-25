@@ -90,6 +90,11 @@ TARGET_SCREEN_HEIGHT := 1280
 # Properties
 TARGET_SYSTEM_PROP := $(DEVICE_PATH)/system.prop
 
+# SELinux
+# Permissive via the kernel cmdline. The legacy MTK vendor rules violate the
+# platform neverallows.
+SELINUX_IGNORE_NEVERALLOWS := true
+
 # Seccomp
 # The MTK OMX blobs need extra syscalls in the mediacodec policy.
 BOARD_SECCOMP_POLICY := $(DEVICE_PATH)/seccomp
