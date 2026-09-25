@@ -115,6 +115,21 @@ BOARD_HAVE_BLUETOOTH := true
 BOARD_HAVE_BLUETOOTH_MTK := true
 BOARD_BLUETOOTH_DOES_NOT_USE_RFKILL := true
 
+# Shims
+TARGET_LD_SHIM_LIBS += \
+    /vendor/lib/hw/audio.primary.mt6753.so|/vendor/lib/libshim_audio_m5s.so \
+    /vendor/lib64/hw/audio.primary.mt6753.so|/vendor/lib64/libshim_audio_m5s.so \
+    /vendor/lib/libcam_utils.so|/vendor/lib/libmtkshim_gui.so \
+    /vendor/lib64/libcam_utils.so|/vendor/lib64/libmtkshim_gui.so \
+    /vendor/lib/libmtk_mmutils.so|/vendor/lib/libmtkshim_gui.so \
+    /vendor/lib64/libmtk_mmutils.so|/vendor/lib64/libmtkshim_gui.so \
+    /vendor/lib/libcam.client.so|/vendor/lib/libmtkshim_gui.so \
+    /vendor/lib64/libcam.client.so|/vendor/lib64/libmtkshim_gui.so \
+    /vendor/lib/libmmsdkservice.feature.so|/vendor/lib/libmtkshim_gui.so \
+    /vendor/lib/libmmsdkservice.feature.so|/vendor/lib/libmtkshim_ui.so \
+    /vendor/lib64/libmmsdkservice.feature.so|/vendor/lib64/libmtkshim_gui.so \
+    /vendor/lib64/libmmsdkservice.feature.so|/vendor/lib64/libmtkshim_ui.so
+
 # RIL
 BOARD_PROVIDES_LIBRIL := true
 TARGET_SPECIFIC_HEADER_PATH := vendor/mediatek/include
