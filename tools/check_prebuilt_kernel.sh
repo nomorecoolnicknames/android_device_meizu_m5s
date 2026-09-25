@@ -56,11 +56,11 @@ cat >&2 <<MSG
            $want_ver
   найдено: $have_md5
            $have_ver
-Что делать: собрать ядро из worktree k49-worktrees/piedisp (ветка pie-disp;
-из pie-config собирать НЕЛЬЗЯ — там потерян SMI-фикс smi_legacy.c/mmsys_config),
+Что делать (m5s): собрать ядро из worktree /srv/forge/android/m5s/kernel49
+(ветка forge/mt6753-49; скрипт /srv/forge/android/m5s/build_kernel49.sh),
 затем сложить gzip -n -9 от arch/arm64/boot/Image с байт-в-байт стоковым DTB
-captures/20260817-los-first-boot/dtb_stock.dtb (69427 Б) и положить сюда,
-обновив $EXP.  Готовый помощник: tools/los16_repack_boot_kernel.sh.
+m5s (stock/flyme/work/m5s_stock.dtb, 67170 Б, md5 9be87e7f…), положить сюда и
+обновить $EXP.  Приклеенный DTB проверяет tools/check_appended_dtb.sh.
 
 ГРАНИЦА ЭТОГО ГЕЙТА: он не проверяет, что prebuilt АКТУАЛЕН.  Совпадение
 md5 означает лишь «образ соответствует дереву»; отстало ли само дерево от
