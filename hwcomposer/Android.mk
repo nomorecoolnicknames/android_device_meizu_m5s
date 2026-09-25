@@ -1,4 +1,5 @@
-# forge_hwc: replacement hwcomposer for the m5c on the forge 4.9 kernel.
+# forge_hwc: replacement hwcomposer, m5c source, built as hwcomposer.mt6753 for
+# the m5s (4.9 E0 kernel; FACT: disp_session_uapi.h == kernel49 disp_session.h).
 # The vendor hwcomposer.mt6737m.so (built for 3.18) stalls frames against
 # this kernel; keep it renamed to .forgebak and install this module instead.
 #
@@ -10,7 +11,7 @@
 LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
-LOCAL_MODULE := hwcomposer.mt6737m
+LOCAL_MODULE := hwcomposer.mt6753
 LOCAL_MODULE_RELATIVE_PATH := hw
 LOCAL_MODULE_TAGS := optional
 # LOS16/Treble: hwcomposer module must live in /vendor/lib*/hw (composer

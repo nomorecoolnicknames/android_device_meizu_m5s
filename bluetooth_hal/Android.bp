@@ -1,4 +1,6 @@
-// Device-local Bluetooth HIDL service for the m5c, 32-bit.
+// Device-local Bluetooth HIDL service for the m5s, 32-bit (m5c source, renamed:
+// Soong sees every Android.bp in the tree, so the name must be unique).
+// FACT (m5s): stock /system/lib/libbt-vendor.so is 32-bit only, sha256 70a3ff31...
 //
 // The AOSP android.hardware.bluetooth@1.0-service (hardware/interfaces/
 // bluetooth/1.0/default) is ELF64 on this arm64 build, and it works only as
@@ -15,7 +17,7 @@
 // shape of device/meizu/m95/audio_hal_service.  android.hardware.bluetooth@1.0-impl
 // already builds for both ABIs, so /vendor/lib/hw has the 32-bit passthrough.
 cc_binary {
-    name: "android.hardware.bluetooth@1.0-service.m5c",
+    name: "android.hardware.bluetooth@1.0-service.m5s",
     defaults: ["hidl_defaults"],
     relative_install_path: "hw",
     proprietary: true,

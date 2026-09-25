@@ -1,4 +1,4 @@
-# lib_driver_cmd_mt66xx for m5c — MTK private driver-command library for
+# lib_driver_cmd_mt66xx for m5s (m5c file) — MTK private driver-command library for
 # wpa_supplicant/hostapd (BOARD_WPA_SUPPLICANT_PRIVATE_LIB /
 # BOARD_HOSTAPD_PRIVATE_LIB in BoardConfig.mk).
 # Sources are the LOS16-adapted pair from device/meizu/m681 (zero-initialized
@@ -6,10 +6,10 @@
 # ifdef-gated feature blocks (CONFIG_MTK_P2P_SIGMA, CONFIG_MEDIATEK_WIFI_BEAM)
 # that are never enabled here. Runtime fit for the gen2 MT6735 CONSYS driver
 # is verified at the wifi bring-up stage.
-# Guard: this module must exist exactly once per product; device/meizu/m5c
-# subdir makefiles are only included for TARGET_DEVICE=m5c (device Android.mk),
+# Guard: this module must exist exactly once per product; device/meizu/m5s
+# subdir makefiles are only included for TARGET_DEVICE=m5s (device Android.mk),
 # the inner guard is belt-and-braces.
-ifeq ($(TARGET_DEVICE),m5c)
+ifeq ($(TARGET_DEVICE),m5s)
 LOCAL_PATH := $(call my-dir)
 
 ifeq ($(WPA_SUPPLICANT_VERSION),VER_0_8_X)
