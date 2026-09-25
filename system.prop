@@ -1,160 +1,124 @@
 #
-# system.prop for Meizu M5c
+# system.prop for the Meizu M5s (m5s, M1612) — LineageOS 16.0
+#
+# Layout follows the m5c LOS 16 file (on this no-first-stage-mount layout the
+# only prop file early init reads is /system/build.prop, so everything lives
+# here).  Values are the m5s's own: live stock probe (m5s/probe/getprop.txt,
+# build.prop, bootargs.txt) and the LOS 15.1 m5s tree.  Where a line is an m5c
+# lesson rather than an m5s measurement, the comment says so.
 #
 
-# Mediatek Chip
-persist.mtk.wcn.combo.chipid=-1
+# --- Platform identity (drives hw_get_module) -------------------------------
+# FACT (probe/build.prop): ro.board.platform=mt6753; init looks for
+# init.mt6735.rc because ro.hardware=mt6735 (cmdline).
+ro.board.platform=mt6753
+ro.mediatek.platform=MT6753
+ro.mediatek.chip_ver=S01
+ro.mediatek.version.sdk=4
+ro.mediatek.version.release=alps-mp-m0.mp1-V2.94_gr6753.66c.mz.m0_P147
+# FACT (probe/hw_libs.txt: gps.mt6753.so; 15.1 tree): GNSS and PowerHAL names.
+ro.hardware.gps=mt6753
+ro.hardware.power=mt6753
+
+# --- MTK combo chip (Wi-Fi/BT/GPS/FM share one CONSYS) -----------------------
+# The LOS 15.1 m5s tree pins the chip id (m5c leaves -1).
+persist.mtk.wcn.combo.chipid=0x0337
 persist.mtk.wcn.fwlog.status=0
 service.wcn.driver.ready=no
 persist.mtk.combo.coredump=no
-ro.mediatek.chip_ver=S01
-ro.board.platform=mt6737m
-ro.mediatek.platform=MT6737M
-ro.mediatek.version.sdk=4
-ro.mediatek.version.release=ZAL856_999A_V0_0_5_BSP_20170605
-ro.product.brand=meizu
-ro.product.manufacturer=meizu
-ro.product.model=m5c
-ro.meizu.product.model=M5c
-ro.product.name=meizu_m5c
-ro.product.device=m5c
-ro.product.board=m5c
-ro.meizu.project.id=m1710-5
-ro.product.flyme.model=m1710
 
-# Telephony
+# --- Telephony (dual SIM, LTE) -------------------------------------------------
+# rild.libpath: absolute /vendor path — mtk-ril is a vendor module here
+# (vendor/meizu/m5s/Android.mk), m5c recipe.
 rild.libpath=/vendor/lib64/mtk-ril.so
 rild.libargs=-d /dev/ttyC0
-ril.specific.sm_cause=0
+ro.telephony.sim.count=2
 ro.telephony.default_network=20,20
 persist.radio.multisim.config=dsds
 persist.radio.default.sim=0
-ro.telephony.sim.count=2
 persist.radio.mobile.data=0,0
-ril.flightmode.poweroffMD=1
-# forge sim/RIL lane 2026-09-03, REJECTED as a cause - kept as a note so the
-# next reader does not re-run the experiment. ro.mtk_flight_mode_power_off_md
-# is the flag mtk-ril.so actually reads (it is a string in the blob, whereas
-# "poweroffMD" is in NO blob - so ril.flightmode.poweroffMD / ril.radiooff.poweroffMD
-# above are inert on this port). It looked like the cure for the MD reset that
-# killed the chain, but the discriminating boot says otherwise: with the flag
-# NOT set at all, SIM still comes up LOADED / Beeline / LTE and "MD reset ioctl"
-# stays at zero. The real cure is one line of forge-modem.rc - "setprop
-# ril.muxreport 0" in on post-fs-data - which closes the gate in
-# vendor/mediatek/ril/libril/ril.cpp onNewCommandConnect(). So do not add the
-# flag here on a guess; if flight mode itself ever misbehaves, this is where to
-# look first.
-ril.external.md=0
-ril.telephony.mode=0
-ril.radiooff.poweroffMD=0
-ro.mtk_enable_md1=1
-ro.mtk_lte_support=1
-# LOS16: BOARD_RIL_CLASS/ril_class is dead in Pie (plan §4.6); telephony goes
-# through the m681-style MTK HIDL rild recipe instead.
-# ro.telephony.ril_class=MT6735
-ro.telephony.ril.config=fakeiccid
-ril.current.share_modem=2
 persist.radio.fd.counter=15
 persist.radio.fd.off.counter=5
 persist.radio.fd.r8.counter=15
 persist.radio.fd.off.r8.counter=5
+ril.current.share_modem=2
+ril.external.md=0
+ril.telephony.mode=0
+ril.specific.sm_cause=0
+ro.mtk_enable_md1=1
+ro.mtk_lte_support=1
 ro.mtk_gemini_support=1
+ro.mtk_gemini_enhancement=1
 persist.gemini.sim_num=2
 ro.gemini.smart_sim_switch=false
+ro.telephony.ril.config=fakeiccid
+# ro.telephony.ril_class is dead in Pie (m5c plan §4.6).
 
-# Wifi
+# --- Wi-Fi -----------------------------------------------------------------------
 mediatek.wlan.chip=CONSYS_MT6735
 mediatek.wlan.module.postfix=_consys_mt6735
 ro.mediatek.wlan.wsc=1
 ro.mediatek.wlan.p2p=1
 mediatek.wlan.ctia=0
+ro.mtk_wlan_support=1
 wifi.tethering.interface=wlan0
 wifi.interface=wlan0
 wifi.direct.interface=p2p0
 wifi.supplicant_scan_interval=180
 
-# Bluetooth 
+# --- Bluetooth / GPS / FM ------------------------------------------------------
 ro.mtk_bt_support=1
-
-# Tethering
-net.tethering.noprovisioning=true
-
-# GLES
-ro.opengles.version=196608
-
-# USB MTP WHQL
-ro.sys.usb.mtp.whql.enable=0
-
-# Power off opt in IPO
-sys.ipo.pwrdncap=2
-
-# USB Storage
-ro.sys.usb.storage.type=mtp
-ro.vold.umsdirtyratio=20
-
-# USB BICR function
-ro.sys.usb.bicr=no
-
-# USB Charge only function
-ro.sys.usb.charging.only=yes
-
-# FM
+ro.mtk_gps_support=1
+ro.mtk_agps_app=1
 fmradio.driver.enable=0
 
-# Audio
+net.tethering.noprovisioning=true
+
+# --- Graphics ---------------------------------------------------------------------
+# GLES 3.1, Mali-T720 MP3 (value of the LOS 15.1 m5s tree).
+ro.opengles.version=196609
+# FACT (probe/getprop.txt): 320 dpi, panel not rotated (m2note donor had 180).
+ro.sf.lcd_density=320
+ro.sf.hwrotation=0
+# Single mBack/mTouch key on the Goodix module; whether E0 delivers it as a key
+# is unknown (and E0 has no touch driver) — keep the software navbar.
+qemu.hw.mainkeys=0
+# FACT measured on the m2note (same Mali-T720 / HWC1 class, 2026-07-02):
+# debug.hwui.use_buffer_age=true bootlooped the device; false booted clean.
+# INFERENCE that the m5s shares it; cheap insurance.
+debug.hwui.use_buffer_age=false
+# m5c lesson (Mali-T720): the blob accepts EGL_BUFFER_PRESERVED but does not
+# preserve the back buffer; hwui partial updates tear.  The m5c file sets
+# "debug.hwui.partial_updates", which is NOT a name this platform knows —
+# REJECTED, FACT: frameworks/base @a1553b93f0 libs/hwui/Properties.h:152
+# PROPERTY_ENABLE_PARTIAL_UPDATES "debug.hwui.use_partial_updates".
+debug.hwui.use_partial_updates=false
+
+# --- Media / DRM / camera -----------------------------------------------------------
+drm.service.enabled=true
+ro.mtk_widevine_drm_l3_support=1
+media.stagefright.legacyencoder=true
+media.stagefright.less-secure=true
+camera.disable_zsl_mode=1
+
+# --- USB -----------------------------------------------------------------------------
+ro.sys.usb.storage.type=mtp
+ro.sys.usb.mtp.whql.enable=0
+ro.sys.usb.bicr=no
+ro.sys.usb.charging.only=yes
+
+# --- Audio -----------------------------------------------------------------------------
 ro.camera.sound.forced=0
 ro.audio.silent=0
 ro.mtk_audio_ape_support=1
-ro.mtk_audio_tuning_tool_ver=V1
+# m5c lesson (M/N-era MTK audio HAL never sets get_capture_position; the forge
+# StreamIn guard in hardware/interfaces @e45e6f6e is opt-in).  INFERENCE that
+# audio.primary.mt6753.so has the same hole — the guard costs only capture
+# timestamps.
+ro.audio.legacy_hal_no_capture_position=1
 
-# hwui: full redraw every frame.  The Mali-T720 blob accepts
-# EGL_BUFFER_PRESERVED but does not actually preserve the back buffer, so
-# hwui partial updates paint fresh damage onto a 2-3 frame old base and the
-# glass shows a horizontal stitch between two moments of motion (forge-shear
-# probe: 39 HARD frames per 1152 during a Settings fling, two different
-# non-zero row shifts inside one submitted buffer).  The property name is the
-# forge rename of AOSP debug.hwui.enable_partial_updates, which at 33 chars
-# exceeds bionic's 31-char limit and can never be set on N.
-# (The old debug.hwui.render_dirty_regions line this replaces was a dead
-# knob: no such property exists in N's hwui.)
-debug.hwui.partial_updates=false
-
-# GPS
-ro.mtk_gps_support=1
-ro.mtk_agps_app=1
-ro.mtk_gps_support=1
-ro.mtk_omacp_support=1
-
-# Kernel
+# --- Misc ------------------------------------------------------------------------------
 ro.zygote.preload.enable=0
 ro.kernel.zio=38,108,105,16
-
-# Display
-ro.sf.lcd_density=320
-qemu.hw.mainkeys=1
-
-# Media / DRM
-drm.service.enabled=true
-ro.mtk_oma_drm_support=1
-ro.mtk_cta_drm_support=1
-ro.mtk_widevine_drm_l3_support=1
-
-# Camera
-media.stagefright.legacyencoder=true
-media.stagefright.less-secure=true
-ro.camera.disable_zsl_mode=1
-
-# Performance
-ro.mtk_perf_simple_start_win=1
-ro.mtk_perf_fast_start_win=1
-ro.mtk_perf_response_time=1
-
-# The MTK legacy audio HAL (audio.primary.mt6737m.so, Nougat vintage) never
-# assigns audio_stream_in::get_capture_position, so the AOSP audio@4.0-impl
-# NULL check passes on uninitialised heap content and the indirect call jumps
-# into the malloc arena: audio@2.0-service took SIGSEGV/SEGV_ACCERR in its
-# reader thread on EVERY microphone capture (measured 2026-09-03, ten
-# tombstones, all thread name reader). Guard added in StreamIn.impl.h is
-# opt-in; this turns it on for the m5c. Cost: AudioRecord loses capture
-# timestamps. Benefit: the audio HAL stops dying whenever the mic is used.
-ro.audio.legacy_hal_no_capture_position=1
+# FRP partition by name (FACT: stock ro.frp.pst).
+ro.frp.pst=/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/frp
