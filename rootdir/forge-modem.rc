@@ -1,4 +1,10 @@
-# forge: modem bring-up chain for LineageOS 16.0 on m5c.
+# forge: modem bring-up chain for LineageOS 16.0 — m5s copy of the m5c file.
+# Every binary named here exists in the m5s set (FACT, ls vendor/bin); the
+# timing facts below were measured on the m5c.  The md_hs2_msg_notify wait
+# greps dmesg for a string of the 4.9 ccci driver; FACT: the function
+# port_proxy_md_hs2_msg_notify exists in E0 (kernel49 eccci1/port_proxy.c:1714).
+# That it logs its own name is the m5c observation; if not, the wait just
+# times out after 30 s and muxd starts anyway.
 #
 # The Pie vendor tree ships the MTK modem binaries (ccci_mdinit, ccci_fsd,
 # gsm0710muxd, muxreport, terservice, mtkrild) but no init script defines
