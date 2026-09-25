@@ -1,0 +1,14 @@
+# Assign all eight M5s CPUs to foreground groups and keep background work on the low cores.
+# These writes require CONFIG_CPUSETS in the kernel.
+
+on boot
+    write /dev/cpuset/top-app/cpus 0-7
+    write /dev/cpuset/top-app/mems 0
+    write /dev/cpuset/foreground/cpus 0-7
+    write /dev/cpuset/foreground/mems 0
+    write /dev/cpuset/background/cpus 0
+    write /dev/cpuset/background/mems 0
+    write /dev/cpuset/system-background/cpus 0-3
+    write /dev/cpuset/system-background/mems 0
+    write /dev/cpuset/restricted/cpus 0-3
+    write /dev/cpuset/restricted/mems 0

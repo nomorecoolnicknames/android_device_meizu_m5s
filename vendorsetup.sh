@@ -1,0 +1,2 @@
+add_lunch_combo lineage_m5s-userdebug
+add_lunch_combo lineage_m5s-eng
