@@ -9,7 +9,9 @@ LOCAL_PATH := device/meizu/m5s
 # meizu-fleet/tools/a9-gen-vendor-blobs.py; its header names every file that
 # goes to /system instead of /vendor (hard-coded /system paths, FACT by strings)
 # and every file left out (hwcomposer / keystore / gatekeeper / RIL pair).
-$(call inherit-product-if-exists, vendor/meizu/m5s/m5s-vendor.mk)
+# Hard inherit (not -if-exists, as in the m5c donor): if the vendor tree or its
+# proprietary/ mount is missing, the build must stop, not ship without blobs.
+$(call inherit-product, vendor/meizu/m5s/m5s-vendor.mk)
 
 PRODUCT_DEVICE := m5s
 
