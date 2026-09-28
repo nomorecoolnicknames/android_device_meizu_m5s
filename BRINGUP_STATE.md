@@ -17,3 +17,7 @@ Verification: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s cloud-lo
 Identity boundary: selected kernel SHA256 b605251322d23032b7866d73ecf1222131d6443eabc6c769f7781d822c12074c. Kernel/config/DTS/boot geometry, blobs and runtime properties were not changed. No kernel decode, flash, boot or compile was performed; generated config/compiled DTB/runtime evidence are not claimed.
 
 Source-view contract: only one selected Meizu device/vendor overlay is visible above the pinned platform. Other Meizu vendor Android.bp files must not be merged into this view.
+
+## Public source checkpoint, 2026-09-29
+
+Category: DIAGNOSTIC (publication and provenance only). The separate public export preserves original logical history with the filters and SHA mapping in PUBLICATION.json. Original private source repositories are unchanged. README.md now makes the omitted external build inputs visible at the repository entry point. Verification: full reachable-history audit, Git fsck, XML parsing and shell syntax checks; no compiler, phone or firmware mutation. Do not infer full ROM build or hardware success from publication. Rollback condition: any public payload violates the declared exclusion/privacy boundary; halt publication and review the offending content.
