@@ -1,6 +1,12 @@
 # lineage_m5s — LineageOS 16.0 product for the Meizu M5s (M1612, MT6753, arm64).
 # Donor: lineage_m5c.mk @77e62e0.
 
+# This product owns Pie-specific HAL modules and packaging. Fail before module
+# selection if a cloud worker accidentally combines it with another platform.
+ifneq ($(PLATFORM_SDK_VERSION),28)
+$(error lineage_m5s requires LineageOS 16.0 / Android SDK 28)
+endif
+
 # arm64: inherit core_64_bit before the phone stack so core_minimal doesn't
 # lock us into ro.zygote=zygote32 (m681/m95/m5c ordering lesson).
 $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
