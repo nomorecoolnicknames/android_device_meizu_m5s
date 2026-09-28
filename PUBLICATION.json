@@ -1,0 +1,187 @@
+{
+  "schema": "remeizu.source-publication.v1",
+  "device": "m5s",
+  "android": 13,
+  "source_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+  "filtered_source_commit": "ad85d437c7c0f8be20f0f86b083c6097b9d3de31",
+  "original_to_published_history": {
+    "924f4a35d1bf15532115f266a076180d803bcac4": "e6a75fd8d0f0e602f8ae1dc8298aaf0814be6ed8",
+    "df8a2cec463e340fe9833a994ff5dfe3e426fb6b": "2176e83dabcbec1c704c30cccad6da67113057e4",
+    "7e89ce3c2728ad2fb63ab6dccf64820843047700": "479f3773fd8a1a30b722423b83161965d8dc220b",
+    "e83701a535cc4a1254bb1f025c3130bde8c5f9f3": "d086760bf898816d5d50d79cbbb8d31f01b8aaff",
+    "13c70de0cce1f63c321a138a997b2a8466419b72": "b11bd5ff610770e4c91f49c00d27bb816537469b",
+    "8bda6c40bf47fc45315f05eb6ada118cb79c9326": "29e564df1a0f84f9d1eaf5e083d22bc81186c5f4",
+    "8a917b7732bc93940bcc7d09f0f00246e0f68c17": "80b059eb41d1ccfef4775ae2b30b8f1d24eb2986",
+    "30149ac71aaaf6eaf718b46239349f2adb293af2": "189e274211a4460b5e7adaa9fc43aa896732e5ec",
+    "f431e09b8446ceffb4735e04631a52fde9d88c37": "46ebadd3e213272dd1526258eb15059b375cae94",
+    "4a0a9fbe91e73b4d93029762290c6bdd9131a7af": "c866f66db937aec42a74340ca9df5c0d81ac1f1b",
+    "312a5f76053f110d735ce3a5536c9c88498789bf": "aed5d3697f4b9aad0caa128efaab0a783129841d",
+    "e4153b686845126b28d3e0a9ee65393b7fc45437": "e6c306709c595f7aaa0fadb36373bfc1f36ae3fe",
+    "53ad26fe63aa8d7cd9a1cbfeb66314ff1ed76abc": "033097f4c18e5791a891cb1917aade75f04e5fef",
+    "21ec7135d4b77de12ab318480db9db9eccfd9c6f": "5721042aaae247265d28b2a018e9cbb34fefc3f9",
+    "f531e2011a86dfa40eb654dc65a75d76e98b0a33": "859d3cc7bb3921981b28774ea624d9162c927e2f",
+    "887410220d77400873819f8167de853162a8477b": "4ef33d1ba757617fe6a5294acb8067f7714942af",
+    "c61f3b3aa4c7d34645157f927ab06f009956831e": "c22081f0537a7bebbeb055a208318d1b8acd294e",
+    "4cb5863e8650b69c6d51fd5f9d89bdaf783e327f": "1343a370372786bd085d7963fc21138c0c5bd01d",
+    "2d504046dcae8d20bd94f16b929326eefb09fff1": "e94627c0465c9bd7a6b30477f294d3fcd6b58c7c",
+    "0e8bb5f3f3be946488e593647c9788a0686bede3": "c8061c22bb4a708f4eab4d18a7354e801128967c",
+    "17c9e5ca36dd56e6ba808f5cf0dbf989d9606f44": "2c72d499353ff9c005d1bcb8793c0a929a324db2",
+    "51d7a29690692c799cc84b1d42f00e74ac335406": "549d2025ae10f3d0b724a5b7926c13df1fb51251",
+    "4ae326ef371a9c0062750ae09e7a2cb3c106db4f": "b8d04d5e1516cd8e3d41f54e7b1424142504e82b",
+    "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400": "ad85d437c7c0f8be20f0f86b083c6097b9d3de31"
+  },
+  "excluded_or_redacted_at_source_tip": [
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "configs/agps_profiles_conf2.xml",
+      "original_blob": "279d1a2c50f599eadba28c1ca03e3783d38a2af3",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "configs/audio/a2dp_audio_policy_configuration.xml",
+      "original_blob": "18892b631a017c1187efed908c8de88dd4e5df27",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "configs/audio/audio_device.xml",
+      "original_blob": "ec0efda72cc7efc3f3febaafc99abf4e28ea74f2",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "configs/audio/audio_effects.xml",
+      "original_blob": "52156e23a9b80f025365b91dcbae9c502a5a74ca",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "configs/audio/audio_policy_configuration.xml",
+      "original_blob": "2268145c0a196374076aad46d1b62eec9921d4bf",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "configs/egl.cfg",
+      "original_blob": "9438b870769bbe3d4756e460cff5af0ff463ccf7",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "configs/keylayout/ACCDET.kl",
+      "original_blob": "620fd5eeacd6d4adcea7d4cf9801a4acb8d30e0b",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "configs/keylayout/Vendor_2454_Product_6500.kl",
+      "original_blob": "a8192e9be4abab9e26ed10c72291bdb278ae75e6",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "configs/keylayout/gf-keys.kl",
+      "original_blob": "c27687c00012e4fde356d60cdb887031419a9db7",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "configs/keylayout/mtk-kpd.kl",
+      "original_blob": "28a3bdf4b3f20289618c9a359d375d635ba5aaff",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "configs/keylayout/mtk-tpd.kl",
+      "original_blob": "720ded39a4bc08db2fd26de517a608c6a0a4c701",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "configs/media_codecs.xml",
+      "original_blob": "31229680b3120b7b0198601ece42dceae7899d07",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "configs/media_codecs_mediatek_video.xml",
+      "original_blob": "077e95b1a0239eb6c69c7fddf965e9bce6590197",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "configs/media_profiles_V1_0.xml",
+      "original_blob": "1bd1c7b6d6bb159fed1e196fa29075201f1a11c3",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "configs/thermal/ht120.mtc",
+      "original_blob": "4ec4a12f8040364ab0b727e3ccc237c992e28a73",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "configs/thermal/thermal.conf",
+      "original_blob": "2d03a34066cbf353182c37f6dca6e70c1cb4d77c",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "configs/thermal/thermal.off.conf",
+      "original_blob": "0daa03be068ae370764edf2b64ce11cd130c6ba1",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "configs/thermal/thermal_policy",
+      "original_blob": "ade7f97d8ac528765cb7aefa8c4c7c183e181762",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "configs/wifi/p2p_supplicant_overlay.conf",
+      "original_blob": "8728ee1c521dbe647be3c0f981decd7e6296f1d3",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "configs/wifi/wpa_supplicant.conf",
+      "original_blob": "3660241f358f09d61208a441a82aec6408f82ec1",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "configs/wifi/wpa_supplicant_overlay.conf",
+      "original_blob": "f6b7121b6abe7fb32770ce37c8c0990692d669b9",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "prebuilt-kernel/Image.gz-dtb",
+      "original_blob": "2a1192a624d2963da590ebe6de79695570edd4de",
+      "reason": "Prebuilt binary/kernel/firmware excluded from source publication."
+    },
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "prebuilt-kernel/Image.gz-dtb-a13",
+      "original_blob": "8ab5154d40a6f7106952e521123d269bd1504390",
+      "reason": "Prebuilt binary/kernel/firmware excluded from source publication."
+    },
+    {
+      "original_commit": "6b01b92c8723bf2a99f962d9fe5d2ea3692ce400",
+      "path": "rootdir/m5s-bdaddr.sh",
+      "original_blob": "51cb2ce46ceb1865b3c3dd42daa0acfc9721257f",
+      "reason": "Factory device address redacted in source comments; no executable lines changed."
+    }
+  ],
+  "source_status": "development source; not a standalone complete ROM build",
+  "runtime_status": "not validated by this publication",
+  "private_inputs_required": [
+    "vendor proprietary library and firmware set",
+    "board configuration payloads listed in excluded_or_redacted_at_source_tip",
+    "matching externally supplied boot kernel and kernel header sources"
+  ],
+  "filter_scope": "Applied to every reachable source commit; original repositories and histories remain unchanged."
+}
