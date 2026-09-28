@@ -70,3 +70,7 @@ Expected marker: one PRODUCT_COPY_FILES source per destination. Rollback:
 generated image differs from the documented selected board config or an additional
 source owner is discovered. Verification: shared checker and post-build installed
 file hashes; current source check does not prove image or runtime behavior.
+
+## Public source checkpoint, 2026-09-29
+
+Category: DIAGNOSTIC (publication and provenance only). The separate public export preserves original logical history with the filters and SHA mapping in PUBLICATION.json. Original private source repositories are unchanged. README.md now makes the omitted external build inputs visible at the repository entry point. Verification: full reachable-history audit, Git fsck, XML parsing and shell syntax checks; no compiler, phone or firmware mutation. Do not infer full ROM build or hardware success from publication. Rollback condition: any public payload violates the declared exclusion/privacy boundary; halt publication and review the offending content.
