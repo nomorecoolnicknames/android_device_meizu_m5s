@@ -1,0 +1,186 @@
+{
+  "schema": "remeizu.source-publication.v1",
+  "device": "m5s",
+  "android": 9,
+  "source_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+  "filtered_source_commit": "272ada9dcc55672ab3d8449eb14e01ea281fec71",
+  "original_to_published_history": {
+    "d3089f507b5664378236e41c0e64c6c4af754ef0": "6312e6eb70d0fd26a498ccbbd75c4ca3bdad95a1",
+    "011fbe4dfd8c317f479614fa46e130753538e501": "5071e2447d218a89d25d6d6a849bde6b69a38a25",
+    "2a964817f1c6b873c85ae47873c5c9562dbd6446": "c195f51c735927af2372b04da939497fda307af4",
+    "af9b2e87639ffc89fb144c145d8f0732febfdaa8": "f3421494e3f0b2056f0fe2b1c9f441515bc66d08",
+    "40c484d9b2634f184f1bcf445f148e58175cd667": "ca32d54f54f1d173cc506ee2a660265c9be3a34b",
+    "31b265620c93d37638039b9e47cc99ad23f3b35e": "dba5252852a2989e96be0b70116755d3c2af6d22",
+    "cbd2d05587f85197a181fe44133978728b0e0042": "75dff74f388bf6a1cf096f3f89ca3c6f3e1f33e3",
+    "9eefd8aabfd0fee21f47d2b892ab89ef92bcebe2": "8da6e28438a735856e003135848f4b44d829b423",
+    "249e9d02baef607d67be1102cce1db8ee328fdc6": "15da053c2dbd10eb977febf04df636965cd6f0be",
+    "3e1b2793706927a6427dce652aac8d56a2f86a3a": "2fbfba402700a2c1be0b5094312b1487c8babd83",
+    "4e5aba77b5da2219c2578423dc8add19b36fc3c8": "272ada9dcc55672ab3d8449eb14e01ea281fec71"
+  },
+  "excluded_or_redacted_at_source_tip": [
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "configs/audio/a2dp_audio_policy_configuration.xml",
+      "original_blob": "18892b631a017c1187efed908c8de88dd4e5df27",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "configs/audio/audio_effects.xml",
+      "original_blob": "52156e23a9b80f025365b91dcbae9c502a5a74ca",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "configs/audio/audio_policy_configuration.xml",
+      "original_blob": "2268145c0a196374076aad46d1b62eec9921d4bf",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "configs/hostapd/hostapd.accept",
+      "original_blob": "923eab6fe6eca4551103a221fbbf8f23d945db1c",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "configs/hostapd/hostapd.deny",
+      "original_blob": "e4b6c09c1f4cac3a130c7d4c08e3e168604e7cf2",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "configs/hostapd/hostapd_default.conf",
+      "original_blob": "8d663de29801daf77d2e74e44c9282441af690c4",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "configs/media_codecs.xml",
+      "original_blob": "31229680b3120b7b0198601ece42dceae7899d07",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "configs/media_codecs_mediatek_video.xml",
+      "original_blob": "077e95b1a0239eb6c69c7fddf965e9bce6590197",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "configs/media_profiles_V1_0.xml",
+      "original_blob": "1bd1c7b6d6bb159fed1e196fa29075201f1a11c3",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "configs/spn-conf.xml",
+      "original_blob": "b9e49ef1178714c434bb92d89197d8e6ea719d0c",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "configs/thermal/ht120.mtc",
+      "original_blob": "4ec4a12f8040364ab0b727e3ccc237c992e28a73",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "configs/thermal/thermal.conf",
+      "original_blob": "2d03a34066cbf353182c37f6dca6e70c1cb4d77c",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "configs/thermal/thermal.off.conf",
+      "original_blob": "0daa03be068ae370764edf2b64ce11cd130c6ba1",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "keylayout/ACCDET.kl",
+      "original_blob": "620fd5eeacd6d4adcea7d4cf9801a4acb8d30e0b",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "keylayout/fp-keys.kl",
+      "original_blob": "de85feae22333ca01ed585f9b36d3e8a3c7cd151",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "keylayout/gf-keys.kl",
+      "original_blob": "c27687c00012e4fde356d60cdb887031419a9db7",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "keylayout/mtk-kpd.kl",
+      "original_blob": "28a3bdf4b3f20289618c9a359d375d635ba5aaff",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "keylayout/mtk-tpd.kl",
+      "original_blob": "720ded39a4bc08db2fd26de517a608c6a0a4c701",
+      "reason": "Stock-derived board configuration or keymap: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "prebuilt-kernel/Image.gz-dtb",
+      "original_blob": "2a1192a624d2963da590ebe6de79695570edd4de",
+      "reason": "Prebuilt binary/kernel/firmware excluded from source publication."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "rootdir/forge-bluetooth.rc",
+      "original_blob": "a628a42c60a68204c250a8281deff8c52d58523d",
+      "reason": "Factory device address redacted in source comments; no executable lines changed."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "rootdir/init.modem.rc",
+      "original_blob": "c2a7fa5685412725676e571da163c9b5b0d193ec",
+      "reason": "Stock-derived init/ueventd reference: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "rootdir/init.mt6735.rc",
+      "original_blob": "ce5a0b33d0aa37d186d58e30a58190c16812a21f",
+      "reason": "Stock-derived init/ueventd reference: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "rootdir/init.mt6735.usb.rc",
+      "original_blob": "c855ad1e89a463764ac9856ba4dd8bc9decdcc21",
+      "reason": "Stock-derived init/ueventd reference: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "rootdir/init.project.rc",
+      "original_blob": "da33d04fc45f9e348203f24565cbc8ffb5d689f4",
+      "reason": "Stock-derived init/ueventd reference: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "rootdir/init.recovery.mt6735.rc",
+      "original_blob": "1ada5ad2a2ea4fe064282206011b29df81fa8ea8",
+      "reason": "Stock-derived init/ueventd reference: redistribution provenance not independently established."
+    },
+    {
+      "original_commit": "4e5aba77b5da2219c2578423dc8add19b36fc3c8",
+      "path": "rootdir/ueventd.mt6735.rc",
+      "original_blob": "8486a15b53fbe7b9dd43cc533b7f723ef4b46761",
+      "reason": "Stock-derived init/ueventd reference: redistribution provenance not independently established."
+    }
+  ],
+  "source_status": "development source; not a standalone complete ROM build",
+  "runtime_status": "not validated by this publication",
+  "private_inputs_required": [
+    "vendor proprietary library and firmware set",
+    "board configuration payloads listed in excluded_or_redacted_at_source_tip",
+    "matching externally supplied boot kernel and kernel header sources"
+  ],
+  "filter_scope": "Applied to every reachable source commit; original repositories and histories remain unchanged."
+}
