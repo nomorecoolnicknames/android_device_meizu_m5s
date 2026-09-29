@@ -41,9 +41,9 @@ cat >&2 <<MSG
            $want_ver
   найдено: $have_md5
            $have_ver
-Что делать: пересобрать 4.9 из worktree /srv/forge/android/m5s/kernel49
+Что делать: пересобрать 4.9 из worktree M5s kernel49
 (ветка forge/mt6753-49, defconfig m5s_defconfig) скриптом
-/srv/forge/android/m5s/build_kernel49.sh, взять получившийся Image.gz-m5sdtb,
+build_kernel49.sh, взять получившийся Image.gz-m5sdtb,
 проверить его гейтом tools/check_appended_dtb.sh (хвост обязан быть СТОКОВЫМ
 DTB m5s_stock.dtb байт-в-байт), положить сюда и обновить $EXP.
 

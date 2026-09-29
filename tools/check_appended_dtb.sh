@@ -72,7 +72,7 @@ print("ОТКАЗ — приклеен НЕ тот DTB, использовать
 print()
 print("Починить, не пересобирая ядро:")
 print("  cat <дерево>/arch/arm64/boot/Image.gz \\")
-print("      /srv/forge/android/m5s/stock/flyme/work/m5s_stock.dtb \\")
+print("      <path-to-stock-m5s.dtb> \\")
 print("      > %s.STOCKDTB" % img)
 sys.exit(1)
 PY
