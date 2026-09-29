@@ -1,18 +1,5 @@
-# forge-cpuset.rc -- give the cpuset groups their actual CPU masks.
-#
-# The generic init.rc creates foreground / background / system-background /
-# restricted / top-app and then does "copy /dev/cpuset/cpus <group>/cpus",
-# i.e. every group gets ALL cores, with the comment "the device's init.rc
-# must actually set the correct cpus".  Ours never did, so cpuset partitioning
-# was a no-op even once the kernel gained the controller
-# (CONFIG_CPUSETS, kernel commit on branch pie-disp).
-#
-# m5s: MT6753 = eight Cortex-A53 in two clusters of four (FACT: stock DTB has
-# 8 cpu nodes, m5s/BRINGUP_STATE.md C1 item 9).  Masks widened from the m5c's
-# 0-3 to 0-7; background work stays on the low cores.
-# FACT: the E0 kernel has "# CONFIG_CPUSETS is not set" (M5S_LOS20_TREE.md §6),
-# so on E0 every write below fails harmlessly — the file is here for the kernel
-# that follows E0 (pie-disp rebase carries CONFIG_CPUSETS).
+# Assign all eight M5s CPUs to foreground groups and keep background work on the low cores.
+# These writes require CONFIG_CPUSETS in the kernel.
 
 on boot
     write /dev/cpuset/top-app/cpus 0-7

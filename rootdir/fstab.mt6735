@@ -1,17 +1,5 @@
-# fstab.mt6735 for the Meizu M5s — LineageOS 16.0, Treble stage A.
-# Entries are the m5c LOS 16 set (proven on Pie with the same 4.9 kernel line);
-# m5s facts that decide them:
-#   - by-name path /dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/ —
-#     FACT for the m5s on its stock kernel (probe/proc_mounts.txt).  On 4.9 it
-#     depends on the msdc host-id-by-node-name fix, which E0 carries
-#     (m5s/BRINGUP_STATE.md C1 item 3) — INFERENCE, first thing to check:
-#     ls /dev/block/platform/*/*/by-name/ from adb.
-#   - custom = mmcblk0p17, 512 MiB, ext4 on stock -> /vendor (BoardConfig.mk).
-#   - no persist partition on the m5s (FACT, scatter) — none listed.
-#   - partition NUMBERS are never written here (p10/expdb near-miss rule).
-# No first-stage/DT fstab: the stock DTB is used byte for byte and carries no
-# firmware/android node (INFERENCE by analogy with the m5c; check:
-# dtc -I dtb m5s_stock.dtb | grep -c fstab).  forceencrypt dropped (m5c).
+# M5s uses custom (512 MiB) for /vendor and has no persist partition.
+# The selected kernel must expose the mtk-msdc.0/11230000.msdc0 by-name path.
 
 /dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/system     /system     ext4  ro                                                        wait
 /dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/custom     /vendor     ext4  ro                                                        wait

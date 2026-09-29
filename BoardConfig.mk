@@ -1,16 +1,5 @@
-# BoardConfig.mk for the Meizu M5s (m5s, model M1612) — MT6753, arm64,
-# 8x Cortex-A53, 3 GB RAM.  LineageOS 16.0 (Android 9 Pie), Treble stage A:
-# a REAL /vendor partition on custom, NO VNDK.
-#
-# Donor: device/meizu/m5c @77e62e0 (LOS 16.0, boots on the M5c with 4.9.188).
-# Everything m5c-specific was re-derived for the m5s from its own evidence:
-#   - stock probe of the live unit      /srv/forge/android/m5s/probe/
-#   - stock Flyme 6.3.1.0G boot.img     /srv/forge/android/m5s/stock/flyme/extracted/boot.img
-#   - the LOS 15.1 tree for this handset
-#     /srv/forge/android/meizu_m6/rom-lineage-15.1-meizu_m6-experimental/device/meizu/m5s
-#   - the LOS 20 tree report            meizu-fleet/trees/M5S_LOS20_TREE.md
-# NOTHING in this tree has ever run on the device: the m5s has never been
-# flashed with anything (m5s/BRINGUP_STATE.md:4).  See README.md.
+# Meizu M5s / M1612, MT6753, eight Cortex-A53 cores and 3 GB RAM.
+# LineageOS 16.0 uses the custom partition as /vendor without VNDK.
 
 DEVICE_PATH := device/meizu/m5s
 
@@ -64,22 +53,9 @@ BOARD_MKBOOTIMG_ARGS := --kernel_offset $(BOARD_KERNEL_OFFSET) --ramdisk_offset 
 
 TARGET_KERNEL_ARCH := arm64
 TARGET_KERNEL_HEADER_ARCH := arm64
-# Prebuilt lane: 4.9.188-m5s+ #1 "E0" (branch forge/mt6753-49 @ba33cd9db,
-# worktree /srv/forge/android/m5s/kernel49), glued to the byte-exact STOCK
-# m5s DTB (m5s_stock.dtb, 67170 B).  Provenance chain (FACT):
-#   prebuilt-kernel/Image.gz-dtb sha256 b6052513...074c
-#   == /home/n8n/m5s_out/kernel49/Image.gz-m5sdtb in /home/n8n/m5s_out/e0/SHA256SUMS.txt,
-#   the kernel inside boot49-m5s-e0.img (sha256 898544a8...).
-# Owner's choice for the m5s is 4.9.  What this kernel does NOT have yet
-# (m5s/BRINGUP_STATE.md "Дальше E1", FLEET plan §8.2):
-#   - no m5s panel driver (ili9881 yassy) and no ft5x46 touch — both were
-#     ported only on the 3.18 line (m5s/kernel, m5s-adapt), so a first LOS 16
-#     boot on E0 is HEADLESS: the success criterion is adb + boot_completed;
-#   - it is 108 commits behind pie-disp, the 4.9 that runs LOS 16 on the m5c
-#     (ion SF_BUF_INFO, CONFIG_CPUSETS, stpbt .write_iter for BT, SMI fix);
-#   - the second CPU cluster rides on mt6735m hps/DVFS tables.
-# The forge_hwc ioctl ABI does match it: hwcomposer/disp_session_uapi.h is
-# byte-identical to kernel49/drivers/misc/mediatek/video/include/disp_session.h.
+# The 4.9 prebuilt requires the matching stock M5s DTB.
+# Panel/touch support and second-cluster power management remain board-specific.
+# The HWC disp_session ioctl definitions must match the selected kernel.
 TARGET_KERNEL_SOURCE :=
 TARGET_KERNEL_CONFIG :=
 TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt-kernel/Image.gz-dtb
