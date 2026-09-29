@@ -38,15 +38,19 @@ MTK_HARDWARE := true
 TARGET_OTA_ASSERT_DEVICE := m5s,M1612
 
 # Kernel
-# The prebuilt is forced even though a kernel source and defconfig are set.
+# The default prebuilt is the 4.9 kernel with the stock M5s DTB appended.
 TARGET_KERNEL_ARCH := arm64
 TARGET_KERNEL_HEADER_ARCH := arm64
-TARGET_KERNEL_SOURCE := kernel/meizu/m5s
-TARGET_KERNEL_CONFIG := m5s_defconfig
-TARGET_FORCE_PREBUILT_KERNEL := true
+TARGET_KERNEL_SOURCE :=
+TARGET_KERNEL_CONFIG :=
 
+# An Android 13 configured prebuilt (cpusets, block cgroups, BPF JIT, PSI,
+# tmpfs xattrs/ACLs, veth, sock_diag) can be selected instead.
+# Keep ARM64_LSE_ATOMICS disabled on Cortex-A53.
 TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt-kernel/Image.gz-dtb
 forge_kernel_expected := $(DEVICE_PATH)/prebuilt-kernel/EXPECTED.txt
+# TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt-kernel/Image.gz-dtb-a13
+# forge_kernel_expected := $(DEVICE_PATH)/prebuilt-kernel/EXPECTED-a13.txt
 # BOARD_KERNEL_IMAGE_NAME is the image name inside boot.img.
 BOARD_KERNEL_IMAGE_NAME := Image.gz-dtb
 

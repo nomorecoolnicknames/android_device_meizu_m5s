@@ -1,5 +1,8 @@
+#
 # Copyright (C) 2026 The LineageOS Project
+#
 # SPDX-License-Identifier: Apache-2.0
+#
 
 LOCAL_PATH := device/meizu/m5s
 
@@ -30,7 +33,7 @@ PRODUCT_PACKAGES += \
     android.hardware.audio.effect@6.0-impl \
     android.hardware.drm@1.0-impl \
     android.hardware.drm@1.0-service \
-    android.hardware.drm@1.3-service.clearkey \
+    android.hardware.drm@1.4-service.clearkey \
     android.hardware.gatekeeper@1.0-service.software
 
 # Health
@@ -82,6 +85,8 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/keylayout/Vendor_2454_Product_6500.kl:$(TARGET_COPY_OUT_VENDOR)/usr/keylayout/Vendor_2454_Product_6500.kl
 
 # Media / audio
+# media_codecs.xml includes media_codecs_google_*.xml, which come from the
+# media APEX at runtime.
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/media_codecs.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs.xml \
     $(LOCAL_PATH)/configs/media_codecs_mediatek_video.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_mediatek_video.xml \
@@ -103,7 +108,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/thermal/thermal_policy:$(TARGET_COPY_OUT_VENDOR)/etc/.tp/.thermal_policy \
     $(LOCAL_PATH)/configs/thermal/ht120.mtc:$(TARGET_COPY_OUT_VENDOR)/etc/.tp/.ht120.mtc \
 
-# wpa_supplicant service
+# wpa_supplicant service with the AIDL interface Android 13 expects.
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/etc/init/init.m5s.wifi.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.m5s.wifi.rc
 
@@ -146,9 +151,9 @@ PRODUCT_PACKAGES += \
     libhwc2on1adapter
 
 # Keystore
+# keystore2 needs a KeyMint instance; the AOSP software KeyMint needs no TEE.
 PRODUCT_PACKAGES += \
-    android.hardware.keymaster@3.0-impl \
-    android.hardware.keymaster@3.0-service
+    android.hardware.security.keymint-service
 
 # Bluetooth
 # com.android.bluetooth aborts without an IBluetoothHci service.
@@ -176,13 +181,21 @@ PRODUCT_PACKAGES += \
     android.hardware.camera.provider@2.4-impl \
     android.hardware.camera.provider@2.4-service
 
+# GNSS
+# Disabled: gps.mt6753.so cannot load in the vendor namespace (it needs
+# libandroid_runtime and libnativehelper), and a declared but unregistered
+# IGnss blocks system_server. Re-enable together with the manifest entry.
+#PRODUCT_PACKAGES += \
+#    android.hardware.gnss@1.0-impl \
+#    android.hardware.gnss@1.0-service
+
 # Audio
 PRODUCT_PACKAGES += \
     android.hardware.audio@2.0-service
 
 # Wi-Fi
+# The Wi-Fi vendor HAL service is not installed yet.
 PRODUCT_PACKAGES += \
-    android.hardware.wifi@1.0-service \
     wificond \
     wpa_supplicant \
     hostapd
@@ -196,7 +209,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     sys.usb.ffs.aio_compat=1
 
 # Dexopt
-# Saves /system space.
+# Saves /system space: Android 13 nearly fills the 1792 MiB system partition.
 PRODUCT_PROPERTY_OVERRIDES += \
     pm.dexopt.first-boot=quicken \
     pm.dexopt.boot-after-ota=verify \

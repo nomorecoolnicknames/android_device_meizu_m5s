@@ -1,8 +1,13 @@
 <!--
   Device HAL manifest (VINTF). Full Treble enforces it, so every HIDL service
-  installed by device.mk is declared here.
--->
+  installed by device.mk is declared here, and nothing else: a declared but
+  unserved HAL hangs its clients. Services that ship their own VINTF fragment
+  (keymint, wpa_supplicant, software gatekeeper, clearkey) are not repeated.
 
+  IWifi must be declared, or the framework never starts the Wi-Fi vendor HAL
+  and the MTK combo driver is never powered up. GNSS is not declared until its
+  service can load.
+-->
 <manifest version="1.0" type="device" target-level="3">
     <hal format="hidl">
         <name>android.hardware.audio</name>
@@ -129,11 +134,8 @@
             <instance>default</instance>
         </interface>
     </hal>
-
-    <hal format="hidl">
-        <name>android.hardware.keymaster</name>
-        <transport>hwbinder</transport>
-        <version>3.0</version>
-        <interface><name>IKeymasterDevice</name><instance>default</instance></interface>
-    </hal>
+    <!--
+      android.hardware.wifi.supplicant is not declared here: wpa_supplicant
+      serves only the AIDL interface and ships its own VINTF fragment.
+    -->
 </manifest>

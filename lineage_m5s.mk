@@ -25,8 +25,3 @@ TARGET_BOOT_ANIMATION_RES := 720
 PRODUCT_BUILD_PROP_OVERRIDES += \
     TARGET_DEVICE=m5s \
     PRODUCT_NAME=m5s
-
-# Prevent accidentally evaluating this target against a different release.
-ifneq ($(PLATFORM_SDK_VERSION),30)
-$(error This device branch requires Android 11 / PLATFORM_SDK_VERSION=30)
-endif
