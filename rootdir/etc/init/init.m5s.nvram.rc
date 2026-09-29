@@ -1,15 +1,5 @@
-# init.m5s.nvram.rc — NVRAM ordering fixes carried over from the m95
-# bring-up (device/meizu/m95 8c12925, meizu-fleet/BRINGUP_STATE.md 2026-09-24).
-#
-# Layout: on this device /data/nvram is a real directory, a mirror of /nvdata
-# (FACT: the LOS 15.1 rc, meizu_m6/rom-lineage-15.1-meizu_m6-experimental/
-# device/meizu/m5s/rootdir/init.mt6735.rc, fills /data/nvram/APCFG/... and
-# m5s-nvram-md-sync.sh copies /nvdata/md into /data/nvram/md; nothing there
-# symlinks /data/nvram, and nothing there creates /data/nvram before the
-# daemon, which it starts `on boot`).  So this file creates the directory
-# itself, as m95 does (init.mt6797.rc: mkdir /data/nvram 0771 root system).
-# The m5c tree differs — its 14.1/16 rc symlinks /data/nvram to /nvdata — so
-# do not copy one fragment over the other.
+# M5s uses a real /data/nvram directory mirrored from /nvdata.
+# Create it before daemon startup; the M5c symlink layout is different.
 
 on post-fs-data
     # nvram_daemon runs `cp fstab* -f /data/nvram/` from / and libnvram then
