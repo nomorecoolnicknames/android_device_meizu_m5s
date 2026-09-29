@@ -102,25 +102,12 @@ PRODUCT_PACKAGES += \
     android.hardware.drm@1.4-service.clearkey \
     android.hardware.gatekeeper@1.0-service.software
 
-# Health: no IHealth at all was installed.  FACT (found by the treble-m5c lane,
-# BRINGUP_STATE 2026-09-25 02:45): Android 13 system_server has no fallback —
-# HealthServiceWrapper throws without an IHealth
-# (frameworks/base/services/core/java/com/android/server/health/
-# HealthServiceWrapper.java:110-116, HealthServiceWrapperHidl.java:205-209),
-# and BatteryService goes down with it.  The AOSP 2.1 default impl reads
-# /sys/class/power_supply, no board library needed; m95 ships the same pair.
-# The -service carries its own VINTF fragment (android.hardware.health@2.1.xml,
-# hardware/interfaces/health/2.1/default/Android.bp:83), so manifest.xml does
-# not repeat it.
+# Android 13 requires an IHealth service for battery state; a legacy-only HAL is insufficient.
 PRODUCT_PACKAGES += \
     android.hardware.health@2.1-impl \
     android.hardware.health@2.1-service
 
-# ---------------------------------------------------------------------------
-# Screen: 720x1280, density 320 -> xhdpi
-# ---------------------------------------------------------------------------
-# FACT: /srv/forge/android/m5s/probe/display.txt "Physical size: 720x1280",
-# probe/getprop.txt ro.sf.lcd_density=320.
+# 720x1280 display, density 320 (xhdpi).
 PRODUCT_AAPT_CONFIG := normal
 PRODUCT_AAPT_PREF_CONFIG := xhdpi
 
@@ -128,17 +115,8 @@ PRODUCT_CHARACTERISTICS := phone
 
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 
-# ---------------------------------------------------------------------------
-# Dalvik / ART heap
-# ---------------------------------------------------------------------------
-# The m5s has 3 GB of RAM (FACT: DRAM map of three ranges totalling ~3 GiB,
-# recorded in /srv/forge/android/m5s/BRINGUP_STATE.md and re-stated in the
-# fleet factbase §2.2).  AOSP ships no phone-xhdpi-3072-dalvik-heap.mk; the
-# closest profiles are 2048 and 4096.  2048 is chosen deliberately: it is the
-# conservative one, and this device has to fit Android 13 into a 1792 MiB
-# /system with no headroom (see the report).  Set by inherit, not by hand —
-# on the m95 port a wrong inherit path silently left the 16 MB default growth
-# limit and system_server OOM'd.
+# Use the conservative 2048 MiB xhdpi heap preset on this 3 GB device.
+# AOSP has no 3072 MiB preset; inherit the preset so heap limits are applied consistently.
 $(call inherit-product, frameworks/native/build/phone-xhdpi-2048-dalvik-heap.mk)
 
 # ---------------------------------------------------------------------------
@@ -390,64 +368,4 @@ PRODUCT_PROPERTY_OVERRIDES += \
     pm.dexopt.inactive=verify \
     pm.dexopt.shared=speed
 
-# ---------------------------------------------------------------------------
-# NOT WIRED YET — every item here is a known gap, with the reason
-# ---------------------------------------------------------------------------
-# 0. NOTHING IN THIS TREE HAS EVER RUN ON THE HARDWARE.  The m5s has never
-#    been flashed with a forge image (FACT:
-#    /srv/forge/android/m5s/BRINGUP_STATE.md:4).  Both the 4.9 "E0" boot images
-#    and the complete LOS 15.1 zip were produced offline and never written.
-#    Everything below is therefore "not wired" on top of "not proven".
-# 1. The Wi-Fi vendor HAL service.  In Android 13 there is NO standalone
-#    android.hardware.wifi@1.0-service module: the srcs/defaults exist in
-#    hardware/interfaces/wifi/1.6/default/Android.bp but the only cc_binary
-#    using them is the cuttlefish apex.  The device tree has to define its own
-#    binary.  Until then wlan0 cannot come up — and manifest.xml already
-#    declares IWifi, so this is a real blocker (a declared but unserved HAL
-#    hangs its client — the m681 light@2.0 lesson).
-#    CORRECTION 2026-09-25 (FACT): the standalone service DOES exist, as a
-#    kati module — hardware/interfaces/wifi/1.6/default/Android.mk:96
-#    (LOCAL_MODULE := android.hardware.wifi@1.0-service), and m95 installs it.
-#    It links the static libwifi-hal, which for BOARD_WLAN_DEVICE := MediaTek
-#    is libwifi-hal-mt66xx (frameworks/opt/net/wifi/libwifi_hal/Android.mk:
-#    123-125); m95 builds its own (device/meizu/m95/wifi_hal).  The service
-#    ships a VINTF fragment (IWifi 1.6): when it is wired, drop the IWifi 1.2
-#    entry from manifest.xml in the same change.
-# 2. lib_driver_cmd_mt66xx / libwifi-hal-mt66xx come from vendor/mediatek,
-#    which is not in this tree.  libwpa_client does not exist in A13 at all.
-# 3. Telephony.  The blob set has 78 RIL/modem files including mtk-ril.so and
-#    mtkrild, but A13 telephony expects IRadio 1.6 / AIDL.  The constraint
-#    measured on the m5c's sibling blob applies here too and must be re-checked
-#    on this one: if mtk-ril.so exports only RIL_InitSocket and not RIL_Init,
-#    the AOSP rild can never host it.  Command to settle it:
-#      readelf --dyn-syms vendor/meizu/m5s/proprietary/vendor/lib64/mtk-ril.so | grep RIL_
-#    SETTLED 2026-09-24 (FACT, nm -D --defined-only): both
-#    proprietary/vendor/lib{,64}/mtk-ril.so export RIL_InitSocket and NO
-#    RIL_Init (DT_NEEDED librilmtk.so, librilutils.so) — same generation as
-#    m5c and m2note.  So the m95 telephony scheme (hardware/ril branch
-#    meizu-legacy-vendor, BOARD_USES_MTK_LEGACY_RIL + librilmtk + a renamed
-#    librilimp, device/meizu/m95 7c49535/2922847) does not apply: its rild
-#    loads mtk-ril.so and calls RIL_Init, as m95's own mtk-ril.so exports.
-# 4. LD shims.  The LOS 15.1 tree declared a 13-entry TARGET_LD_SHIM_LIBS
-#    (libmtkshim_gui / _audio / _camera / _binder / _ui).  The MECHANISM
-#    survives on LOS 20 (vendor/lineage/config/BoardConfigSoong.mk:45,109 ->
-#    vendor/lineage/build/soong/Android.bp:143-153 -> bionic linker_main.cpp),
-#    but the shims themselves are Oreo symbol sets and the shim .so files are
-#    not in this tree at all.  Nothing is declared until they are rebuilt and
-#    re-measured against A13 bionic/libui/libgui.
-# 5. sepolicy — nothing carried.  Runtime is permissive via kernel cmdline, so
-#    a first boot is not blocked; anything past bring-up is.
-# 6. rootdir rc files (init.mt6735.rc, ueventd.mt6735.rc, mtk_agpsd.rc, the
-#    three m5s-*.sh helpers).  The 15.1 set is Nougat/Oreo init syntax; A13
-#    init rejects several of those constructs outright.  Separate lane.
-#    Carried ahead of that lane: rootdir/etc/init/init.m5s.wifi.rc
-#    (wpa_supplicant with the AIDL interface; do not port a second
-#    `service wpa_supplicant`) and rootdir/etc/init/init.m5s.nvram.rc (m95
-#    NVRAM lessons, 2026-09-24).  It creates /data/nvram as a real directory
-#    (the 15.1 layout: a mirror of /nvdata, never a symlink) and copies
-#    fstab.mt6735 into it at post-fs-data; start nvram_daemon after that
-#    (the 15.1 rc starts it `on boot`, which is later — fine).
-# 7. Fingerprint (Goodix).  Blobs exist; no HAL, no permission XML, no
-#    manifest entry.  Deliberate — see the permissions block above.
-# 8. recovery/TWRP — this tree does nothing with recovery.img beyond the
-#    partition size and TARGET_RECOVERY_FSTAB.
+# HAL integration and first boot remain separate validation steps from source compilation.

@@ -1,38 +1,6 @@
-# fstab.mt6735 — Meizu M5s (m5s, M1612), LineageOS 20.0 / Android 13.
-#
-# Derived from the fstab of the LOS 15.1 tree built for this handset
-# (device/meizu/m5s/rootdir/fstab.mt6735) with the Android-13 changes the m5c
-# lane already worked out:
-#
-#  1. first_stage_mount on /system and /vendor.  A13 init has no "mount
-#     /system later from init.rc" mode any more; DoFirstStageMount() must bring
-#     both up and then SwitchRoot() into /system.
-#  2. /vendor is a REAL partition on `custom`.
-#     FACT: custom = mmcblk0p17, 524 288 KiB = 512 MiB
-#     (/srv/forge/android/m5s/probe/partitions.txt), already an ext4 filesystem
-#     mounted by the STOCK firmware as /custom
-#     ("…/by-name/custom /custom ext4 ro,seclabel,relatime",
-#      /srv/forge/android/m5s/probe/proc_mounts.txt).
-#  3. forceencrypt dropped from /data.  A13 uses file-based encryption; the
-#     Marshmallow-era forceencrypt= syntax is not accepted, and metadata
-#     encryption on this kernel is untested.
-#     CORRECTION 2026-09-24: /data carries NO encryption flag at all.  The
-#     encryptable=footer this note used to keep is rejected by Android 13
-#     unless vold_managed is also set (system/core/fs_mgr/fs_mgr_fstab.cpp:
-#     317-322, "FDE is no longer supported"), and that rejection fails the
-#     WHOLE fstab, so first-stage init could not have mounted /system.
-#     Decision (team lead, 2026-09-24): /data unencrypted for now; FBE is a
-#     separate task.
-#  4. /persist is absent — the m5s GPT has no persist partition (FACT: stock
-#     scatter MT6753_M1612_scatter.txt has no such entry).
-#
-# The by-name directory is resolved at runtime; partition NUMBERS are never
-# written here on purpose (project rule after the p10/expdb near-miss).
-# FACT: the full node path below is the one the stock install actually uses
-# (probe/proc_mounts.txt); the short mtk-msdc.0/by-name form exists only as an
-# init-created symlink alias.
-#
-# <src>                                                                        <mnt_point>  <type>  <mnt_flags and options>                                               <fs_mgr_flags>
+# M5s mounts /system and custom-backed /vendor during first-stage init.
+# No persist partition exists. /data has no encryption flag; FBE requires separate integration.
+# Use the full stock by-name path below.
 
 /dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/system                   /system      ext4    ro,barrier=1                                                          wait,first_stage_mount
 /dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/custom                   /vendor      ext4    ro,barrier=1                                                          wait,first_stage_mount

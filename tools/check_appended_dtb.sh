@@ -1,28 +1,8 @@
 #!/bin/bash
-# check_appended_dtb.sh — проверка ГОТОВОГО Image.gz-dtb перед тем, как класть
-# его в prebuilt-kernel/ или прошивать.  Отвечает на вопрос, на который
-# check_prebuilt_kernel.sh не отвечает: «какой DTB приклеен к образу?».
-#
-# Ядро 4.9 этого аппарата рассчитано на СТОКОВЫЙ DTB Flyme, приклеенный к
-# Image.gz байт-в-байт.  Штатная цель `make Image.gz-dtb` клеит DTB, СОБРАННЫЙ
-# из дерева, и образ при этом выглядит нормально: правильное имя, правдоподобный
-# размер, никакой ошибки.  На m5c ровно это однажды и произошло.
-#
-# Ключ различения для MT6753 (НЕ такой, как у m5c!):
-#   стоковый DTB m5s:  msdc0@11230000 { compatible = "mediatek,mt6753-mmc" }
-#                      (FACT: /srv/forge/android/m5s/stock/flyme/work/m5s_stock.dts:21)
-#   собранный деревом: "mediatek,msdc"
-# Драйвер eMMC биндится по первому.  На втором аппарат не найдёт корневую ФС.
-#
-# ВАЖНО: гейт осмыслен только на СЖАТОМ Image.gz-dtb.  На сыром
-# arch/arm64/boot/Image строки msdc читаются из самого драйвера и вывод был бы
-# ложным; поэтому не-gzip вход отвергается отдельным кодом 2.
-#
-#   ./check_appended_dtb.sh <Image.gz-dtb> [ожидаемый-md5-dtb]
-#
-# Без второго аргумента сверяет со стоковым DTB m5s
-# (m5s_stock.dtb, 67170 Б, md5 9be87e7f729537994a50eebe9a836d71,
-#  sha256 a980f28052cdd11bc8bb523e468a1e2d6e0e13ba2b9fa7dbedeef9554de4252d).
+# Validate the appended stock M5s DTB in a gzip Image.gz-dtb.
+# Its MMC compatible is mediatek,mt6753-mmc, not mediatek,msdc.
+# The raw Image is rejected because driver strings would produce false matches.
+# Usage: check_appended_dtb.sh IMAGE [EXPECTED_DTB_MD5]
 set -u
 
 STOCK_MD5=9be87e7f729537994a50eebe9a836d71
