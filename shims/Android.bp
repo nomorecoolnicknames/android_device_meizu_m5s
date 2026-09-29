@@ -1,0 +1,14 @@
+// Vendor-side libraries needed because the device is full Treble: a vendor
+// process can only load /vendor libraries, LLNDK and public VNDK, so a blob
+// that needs a framework-only library needs a vendor copy with that soname.
+
+// libgui.so for the blobs. libgui is VNDK-private, so the system copy is not
+// visible to vendor processes. This empty library takes the libgui soname and
+// depends on libgui_vendor, which provides the symbols.
+cc_library_shared {
+    name: "libm5sshim_gui",
+    stem: "libgui",
+    vendor: true,
+    srcs: ["stub.cpp"],
+    shared_libs: ["libgui_vendor"],
+}

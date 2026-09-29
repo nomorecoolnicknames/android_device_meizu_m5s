@@ -1,0 +1,5 @@
+// Soong namespace for the m5s device tree. Without it, modules declared here
+// would get install rules in every product of the workspace. device.mk adds
+// this namespace to PRODUCT_SOONG_NAMESPACES.
+soong_namespace {
+}

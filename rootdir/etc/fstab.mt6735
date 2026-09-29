@@ -1,0 +1,41 @@
+# M5s mounts /system and custom-backed /vendor during first-stage init.
+# No persist partition exists. /data has no encryption flag; FBE requires separate integration.
+# Use the full stock by-name path below.
+
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/system                   /system      ext4    ro,barrier=1                                                          wait,first_stage_mount
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/custom                   /vendor      ext4    ro,barrier=1                                                          wait,first_stage_mount
+
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/userdata                 /data        ext4    noatime,nosuid,nodev,noauto_da_alloc,discard                           wait,check
+# /cache is nofail: a failed mount would make mount_all fail and zygote would
+# never start. It is not formattable because newer mke2fs defaults may enable
+# ext4 features the kernel lacks.
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/cache                    /cache       ext4    noatime,nosuid,nodev,noauto_da_alloc,discard                           wait,check,nofail
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/metadata                 /metadata    ext4    noatime,nosuid,nodev,discard                                          wait,formattable,first_stage_mount
+
+# nofail: without it a failed mount of any of these stops the boot with no
+# logs; with it the device boots and the missing NVRAM/IMEI shows in the log.
+# formattable only covers a partition with no filesystem at all.
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/protect1                 /protect_f   ext4    noatime,nosuid,nodev,noauto_da_alloc,commit=1,nodelalloc               wait,check,formattable,nofail
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/protect2                 /protect_s   ext4    noatime,nosuid,nodev,noauto_da_alloc,commit=1,nodelalloc               wait,check,formattable,nofail
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/nvdata                   /nvdata      ext4    noatime,nosuid,nodev,noauto_da_alloc,discard                           wait,check,formattable,nofail
+
+# Removable / OTG
+/devices/mtk-msdc.0/11240000.msdc1*                                            auto         auto    defaults                                                              voldmanaged=sdcard1:auto
+/devices/platform/mt_usb*                                                      auto         vfat    defaults                                                              voldmanaged=usbotg:auto
+
+# Raw partitions the framework / recovery want to know about by name
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/frp                      /persistent  emmc    defaults                                                              defaults
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/nvram                    /nvram       emmc    defaults                                                              defaults
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/proinfo                  /proinfo     emmc    defaults                                                              defaults
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/lk                       /bootloader  emmc    defaults                                                              defaults
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/para                     /misc        emmc    defaults                                                              defaults
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/boot                     /boot        emmc    defaults                                                              defaults
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/recovery                 /recovery    emmc    defaults                                                              defaults
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/logo                     /logo        emmc    defaults                                                              defaults
+# expdb (p10, 10 MiB) holds post-mortem logs. Listed by name only; never write
+# to it.
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/expdb                    /expdb       emmc    defaults                                                              defaults
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/secro                    /secro       emmc    defaults                                                              defaults
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/seccfg                   /seccfg      emmc    defaults                                                              defaults
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/tee1                     /tee1        emmc    defaults                                                              defaults
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/tee2                     /tee2        emmc    defaults                                                              defaults

@@ -1,0 +1,2 @@
+# prebuilt-kernel/Image.gz-dtb must not be ignored: BoardConfig.mk checks it
+# against prebuilt-kernel/EXPECTED.txt.

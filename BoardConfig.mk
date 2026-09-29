@@ -1,22 +1,28 @@
-# Board configuration for the Meizu M5s (M1612, MT6753).
-# The 3.18 kernel with its DTB is supplied as a prebuilt; see README.md.
+# Copyright (C) 2026 The LineageOS Project
+# SPDX-License-Identifier: Apache-2.0
 
 DEVICE_PATH := device/meizu/m5s
 
-# Architecture (8x Cortex-A53 in two clusters)
+include vendor/lineage/config/BoardConfigLineage.mk
+
+# Architecture
+# MT6753: eight Cortex-A53 cores without ARMv8.1 LSE atomics; keep armv8-a.
 TARGET_ARCH := arm64
 TARGET_ARCH_VARIANT := armv8-a
 TARGET_CPU_ABI := arm64-v8a
 TARGET_CPU_ABI2 :=
 TARGET_CPU_VARIANT := cortex-a53
+TARGET_CPU_VARIANT_RUNTIME := cortex-a53
 
 TARGET_2ND_ARCH := arm
-# armv8-a, not armv7-a-neon: the combo makefiles ignore armv7-a-neon on an
-# armv8-a primary.
 TARGET_2ND_ARCH_VARIANT := armv8-a
 TARGET_2ND_CPU_ABI := armeabi-v7a
 TARGET_2ND_CPU_ABI2 := armeabi
 TARGET_2ND_CPU_VARIANT := cortex-a53
+TARGET_2ND_CPU_VARIANT_RUNTIME := cortex-a53
+
+# Several MTK daemons (ccci_mdinit, gsm0710muxd, mnld, nvram_daemon) are
+# 32-bit only, so the secondary ABI has to stay.
 TARGET_USES_64_BIT_BINDER := true
 
 # Platform
@@ -29,34 +35,47 @@ BOARD_NAME := m5s
 BOARD_USES_MTK_HARDWARE := true
 MTK_HARDWARE := true
 
+TARGET_OTA_ASSERT_DEVICE := m5s,M1612
+
 # Kernel
-BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 androidboot.selinux=permissive androidboot.hardware=mt6735
+# The prebuilt is forced even though a kernel source and defconfig are set.
+TARGET_KERNEL_ARCH := arm64
+TARGET_KERNEL_HEADER_ARCH := arm64
+TARGET_KERNEL_SOURCE := kernel/meizu/m5s
+TARGET_KERNEL_CONFIG := m5s_defconfig
+TARGET_FORCE_PREBUILT_KERNEL := true
+
+TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt-kernel/Image.gz-dtb
+forge_kernel_expected := $(DEVICE_PATH)/prebuilt-kernel/EXPECTED.txt
+# BOARD_KERNEL_IMAGE_NAME is the image name inside boot.img.
+BOARD_KERNEL_IMAGE_NAME := Image.gz-dtb
+
+# Reject a prebuilt kernel that does not match its EXPECTED file.
+forge_kernel_check := $(shell $(DEVICE_PATH)/tools/check_prebuilt_kernel.sh \
+        $(TARGET_PREBUILT_KERNEL) $(forge_kernel_expected))
+ifneq ($(strip $(forge_kernel_check)),)
+$(error $(forge_kernel_check))
+endif
+
+# Kernel 0x40080000, ramdisk 0x44000000, tags 0x4e000000, page size 2048.
 BOARD_KERNEL_BASE := 0x40000000
 BOARD_KERNEL_OFFSET := 0x00080000
 BOARD_RAMDISK_OFFSET := 0x04000000
 BOARD_KERNEL_TAGS_OFFSET := 0x0e000000
 BOARD_KERNEL_PAGESIZE := 2048
-BOARD_MKBOOTIMG_ARGS := --kernel_offset $(BOARD_KERNEL_OFFSET) --ramdisk_offset $(BOARD_RAMDISK_OFFSET) --tags_offset $(BOARD_KERNEL_TAGS_OFFSET) --board 1551951703
+BOARD_MKBOOTIMG_ARGS := \
+    --kernel_offset $(BOARD_KERNEL_OFFSET) \
+    --ramdisk_offset $(BOARD_RAMDISK_OFFSET) \
+    --tags_offset $(BOARD_KERNEL_TAGS_OFFSET) \
+    --board m5s
 
-TARGET_KERNEL_ARCH := arm64
-TARGET_KERNEL_HEADER_ARCH := arm64
-# Prebuilt MT6753 3.18.19 kernel built from source, with the Yassy panel,
-# FocalTech touch, DTB and ashmem built in.
-TARGET_KERNEL_SOURCE :=
-TARGET_KERNEL_CONFIG :=
-TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt-kernel/Image.gz-dtb
-BOARD_KERNEL_IMAGE_NAME := Image.gz-dtb
-
-# Reject a prebuilt kernel that does not match its EXPECTED file.
-forge_kernel_check := $(shell $(DEVICE_PATH)/tools/check_prebuilt_kernel.sh \
-        $(TARGET_PREBUILT_KERNEL) $(DEVICE_PATH)/prebuilt-kernel/EXPECTED.txt)
-ifneq ($(strip $(forge_kernel_check)),)
-$(error $(forge_kernel_check))
-endif
+# androidboot.hardware=mt6735 makes init import init.mt6735.rc and find
+# fstab.mt6735. buildvariant= is appended by the build system.
+BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 androidboot.selinux=permissive androidboot.hardware=mt6735
 
 # Partitions
-# system p23 1792 MiB, cache p24 400 MiB, userdata p25,
-# custom (vendor) p17 512 MiB.
+# A-only, no dynamic partitions: boot 16 MiB, recovery 32 MiB,
+# custom (vendor) 512 MiB, system 1792 MiB.
 BOARD_BOOTIMAGE_PARTITION_SIZE := 16777216
 BOARD_RECOVERYIMAGE_PARTITION_SIZE := 33554432
 BOARD_SYSTEMIMAGE_PARTITION_SIZE := 1879048192
@@ -70,25 +89,44 @@ BOARD_SYSTEMIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_USERDATAIMAGE_FILE_SYSTEM_TYPE := ext4
 
+AB_OTA_UPDATER := false
+BOARD_USES_RECOVERY_AS_BOOT := false
+
+# No system_ext / product partitions; fold them into /system.
+TARGET_COPY_OUT_SYSTEM_EXT := system/system_ext
+TARGET_COPY_OUT_PRODUCT := system/product
+
 # Vendor
-# /vendor lives on the stock 512 MiB "custom" partition (mmcblk0p17). VNDK
-# is off: the Marshmallow blobs cannot satisfy it (see lineage_m5s.mk).
+# /vendor lives on the stock 512 MiB ext4 "custom" partition (mmcblk0p17).
 TARGET_COPY_OUT_VENDOR := vendor
 BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_VENDORIMAGE_PARTITION_SIZE := 536870912
 
-# A-only, no dynamic partitions.
-AB_OTA_UPDATER := false
-BOARD_PROPERTY_OVERRIDES_SPLIT_ENABLED := true
+# Treble
+# PRODUCT_SHIPPING_API_LEVEL is unset, so full Treble has to be forced. This
+# also enforces the VINTF manifest: every HIDL service must be declared in
+# manifest.xml. The legacy blobs are not VNDK-compliant; device.mk and shims/
+# provide the missing vendor libraries.
+PRODUCT_FULL_TREBLE_OVERRIDE := true
+
+# VNDK
+BOARD_VNDK_VERSION := current
+
+# Root layout
+# Not system-as-root: the bootloader passes neither skip_initramfs nor
+# force_normal_boot. First-stage init mounts /system and /vendor using the
+# fstab in the boot ramdisk.
+BOARD_ROOT_EXTRA_FOLDERS := nvdata protect_f protect_s
 
 # Recovery
-TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/fstab.mt6735
+TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/etc/fstab.mt6735
 TARGET_RECOVERY_PIXEL_FORMAT := BGRA_8888
 TARGET_SCREEN_WIDTH := 720
 TARGET_SCREEN_HEIGHT := 1280
 
 # Properties
 TARGET_SYSTEM_PROP := $(DEVICE_PATH)/system.prop
+TARGET_VENDOR_PROP := $(DEVICE_PATH)/vendor.prop
 
 # SELinux
 # Permissive via the kernel cmdline. The legacy MTK vendor rules violate the
@@ -99,13 +137,15 @@ SELINUX_IGNORE_NEVERALLOWS := true
 # The MTK OMX blobs need extra syscalls in the mediacodec policy.
 BOARD_SECCOMP_POLICY := $(DEVICE_PATH)/seccomp
 
-# Wi-Fi (MTK CONSYS)
+# Graphics
+BOARD_EGL_CFG := $(DEVICE_PATH)/configs/egl.cfg
+USE_OPENGL_RENDERER := true
+
+# Wi-Fi (MTK CONSYS MT6735 combo)
 BOARD_WLAN_DEVICE := MediaTek
 WPA_SUPPLICANT_VERSION := VER_0_8_X
 BOARD_WPA_SUPPLICANT_DRIVER := NL80211
-BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_mt66xx
 BOARD_HOSTAPD_DRIVER := NL80211
-BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_mt66xx
 WIFI_DRIVER_STATE_CTRL_PARAM := /dev/wmtWifi
 WIFI_DRIVER_STATE_ON := 1
 WIFI_DRIVER_STATE_OFF := 0
@@ -115,25 +155,12 @@ BOARD_HAVE_BLUETOOTH := true
 BOARD_HAVE_BLUETOOTH_MTK := true
 BOARD_BLUETOOTH_DOES_NOT_USE_RFKILL := true
 
-# Shims
-TARGET_LD_SHIM_LIBS += \
-    /vendor/lib/hw/audio.primary.mt6753.so|/vendor/lib/libshim_audio_m5s.so \
-    /vendor/lib64/hw/audio.primary.mt6753.so|/vendor/lib64/libshim_audio_m5s.so \
-    /vendor/lib/libcam_utils.so|/vendor/lib/libmtkshim_gui.so \
-    /vendor/lib64/libcam_utils.so|/vendor/lib64/libmtkshim_gui.so \
-    /vendor/lib/libmtk_mmutils.so|/vendor/lib/libmtkshim_gui.so \
-    /vendor/lib64/libmtk_mmutils.so|/vendor/lib64/libmtkshim_gui.so \
-    /vendor/lib/libcam.client.so|/vendor/lib/libmtkshim_gui.so \
-    /vendor/lib64/libcam.client.so|/vendor/lib64/libmtkshim_gui.so \
-    /vendor/lib/libmmsdkservice.feature.so|/vendor/lib/libmtkshim_gui.so \
-    /vendor/lib/libmmsdkservice.feature.so|/vendor/lib/libmtkshim_ui.so \
-    /vendor/lib64/libmmsdkservice.feature.so|/vendor/lib64/libmtkshim_gui.so \
-    /vendor/lib64/libmmsdkservice.feature.so|/vendor/lib64/libmtkshim_ui.so
-
-# RIL
-BOARD_PROVIDES_LIBRIL := true
-TARGET_SPECIFIC_HEADER_PATH := vendor/mediatek/include
-
 # VINTF
-# Without IWifi in the manifest the framework never starts the Wi-Fi HAL.
 DEVICE_MANIFEST_FILE := $(DEVICE_PATH)/manifest.xml
+
+# Build workarounds
+# The legacy blobs do not pass the prebuilt ELF dependency checks.
+BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
+BUILD_BROKEN_PREBUILT_ELF_FILES := true
+BUILD_BROKEN_DUP_RULES := true
+BUILD_BROKEN_VENDOR_PROPERTY_NAMESPACE := true

@@ -1,0 +1,28 @@
+# M5s uses a real /data/nvram directory mirrored from /nvdata.
+# Create it before daemon startup; the M5c symlink layout is different.
+
+on post-fs-data
+    # nvram_daemon copies fstab* from / into /data/nvram, and libnvram parses
+    # /data/nvram/fstab.<ro.hardware>. The fstab now lives only in the boot
+    # ramdisk, so provide the copy here; without it nvram_daemon exits and
+    # every service waiting on service.nvram_init stalls.
+    mkdir /data/nvram 0771 root system
+    copy /vendor/etc/fstab.mt6735 /data/nvram/fstab.mt6735
+    chmod 0644 /data/nvram/fstab.mt6735
+
+# Bluetooth address from NVRAM. The AOSP Bluetooth HAL aborts with
+# "No Bluetooth Address!" unless an address property is set; m5s-bdaddr.sh
+# publishes it as persist.service.bdroid.bdaddr. The HAL also reads BT_Addr
+# through libnvram, hence the group change. Both wait until NVRAM is ready.
+# An enforcing build needs a dedicated SELinux domain for the script.
+service m5s_bdaddr /vendor/bin/sh /vendor/bin/m5s-bdaddr.sh
+    class core
+    user root
+    group root bluetooth
+    oneshot
+    disabled
+
+on property:service.nvram_init=Ready
+    chown root bluetooth /data/nvram/APCFG/APRDEB/BT_Addr
+    chmod 0660 /data/nvram/APCFG/APRDEB/BT_Addr
+    start m5s_bdaddr

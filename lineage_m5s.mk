@@ -1,50 +1,32 @@
-# LineageOS 16.0 product for the Meizu M5s (M1612, MT6753).
+# Copyright (C) 2026 The LineageOS Project
+# SPDX-License-Identifier: Apache-2.0
 
-# This product carries Pie-specific HAL modules; fail early if it is combined
-# with another platform release.
-ifneq ($(PLATFORM_SDK_VERSION),28)
-$(error lineage_m5s requires LineageOS 16.0 / Android SDK 28)
-endif
-
-# Inherit core_64_bit before the phone stack so ro.zygote is not locked to
-# zygote32.
+# Inherit from those products. Most specific first.
 $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
-$(call inherit-product, vendor/lineage/config/common_full_phone.mk)
+
+# Inherit from m5s device
 $(call inherit-product, device/meizu/m5s/device.mk)
 
-DEVICE_PACKAGE_OVERLAYS += device/meizu/m5s/overlay
+# Inherit some common Lineage stuff.
+$(call inherit-product, vendor/lineage/config/common_full_phone.mk)
 
 PRODUCT_NAME := lineage_m5s
 PRODUCT_DEVICE := m5s
-PRODUCT_BRAND := meizu
+PRODUCT_BRAND := Meizu
 PRODUCT_MANUFACTURER := Meizu
 PRODUCT_MODEL := M5s
-PRODUCT_RELEASE_NAME := m5s
-# M1612 is the model number.
-TARGET_OTA_ASSERT_DEVICE := m5s,m1612,M5s
-PRODUCT_BUILD_PROP_OVERRIDES += \
-    PRODUCT_NAME=lineage_m5s \
-    PRODUCT_DEVICE=m5s \
-    TARGET_DEVICE=m5s
-
-# Pie: vendor/lineage does not default LINEAGE_BUILD from TARGET_DEVICE.
-LINEAGE_BUILD := m5s
-
-# Treble is off: the Marshmallow blobs are not VNDK-compliant.
-PRODUCT_SHIPPING_API_LEVEL := 23
-PRODUCT_FULL_TREBLE_OVERRIDE := false
-
-# profman crashes with SIGBUS on the build hosts; the boot image profile is
-# only an optimisation.
-PRODUCT_USE_PROFILE_FOR_BOOT_IMAGE := false
 
 PRODUCT_GMS_CLIENTID_BASE := android-meizu
 
-# Insecure ADB defaults for development builds.
-PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
-    ro.secure=0 \
-    ro.debuggable=1 \
-    ro.adb.secure=0 \
-    persist.sys.usb.config=adb \
-    persist.service.adb.enable=1
+# Boot animation
+TARGET_BOOT_ANIMATION_RES := 720
+
+PRODUCT_BUILD_PROP_OVERRIDES += \
+    TARGET_DEVICE=m5s \
+    PRODUCT_NAME=m5s
+
+# Prevent accidentally evaluating this target against a different release.
+ifneq ($(PLATFORM_SDK_VERSION),30)
+$(error This device branch requires Android 11 / PLATFORM_SDK_VERSION=30)
+endif

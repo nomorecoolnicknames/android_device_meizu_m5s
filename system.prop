@@ -1,109 +1,25 @@
 #
 # system.prop for the Meizu M5s
 #
-# On this layout the only prop file early init reads is /system/build.prop,
-# so all properties live here.
+# MTK hardware properties live in vendor.prop. ro.zygote, ro.product.* and the
+# dalvik heap sizes come from the build system and must not be set here.
 #
 
-# Platform
-# Modules are named *.mt6753, but ro.hardware (init.rc, fstab) is mt6735.
-ro.board.platform=mt6753
-ro.mediatek.platform=MT6753
-ro.mediatek.chip_ver=S01
-ro.mediatek.version.sdk=4
-ro.mediatek.version.release=alps-mp-m0.mp1-V2.94_gr6753.66c.mz.m0_P147
-# HAL module selection
-ro.hardware.gps=mt6753
-ro.hardware.power=mt6753
+# Display density (720x1280 panel)
+ro.sf.lcd_density=320
 
-# MTK combo chip (Wi-Fi / BT / GPS / FM share one CONSYS)
-# The chip id is fixed instead of auto-detected.
-persist.mtk.wcn.combo.chipid=0x0337
-persist.mtk.wcn.fwlog.status=0
-service.wcn.driver.ready=no
-persist.mtk.combo.coredump=no
+# Software navigation bar: the only front key is the fingerprint home button.
+qemu.hw.mainkeys=0
 
-# Telephony (dual SIM, LTE)
-rild.libpath=/vendor/lib64/mtk-ril.so
-rild.libargs=-d /dev/ttyC0
-ro.telephony.sim.count=2
-ro.telephony.default_network=20,20
-persist.radio.multisim.config=dsds
-persist.radio.default.sim=0
-persist.radio.mobile.data=0,0
-persist.radio.fd.counter=15
-persist.radio.fd.off.counter=5
-persist.radio.fd.r8.counter=15
-persist.radio.fd.off.r8.counter=5
-ril.current.share_modem=2
-ril.external.md=0
-ril.telephony.mode=0
-ril.specific.sm_cause=0
-ro.mtk_enable_md1=1
-ro.mtk_lte_support=1
-ro.mtk_gemini_support=1
-ro.mtk_gemini_enhancement=1
-persist.gemini.sim_num=2
-ro.gemini.smart_sim_switch=false
-ro.telephony.ril.config=fakeiccid
-
-# Wi-Fi
-mediatek.wlan.chip=CONSYS_MT6735
-mediatek.wlan.module.postfix=_consys_mt6735
-ro.mediatek.wlan.wsc=1
-ro.mediatek.wlan.p2p=1
-mediatek.wlan.ctia=0
-ro.mtk_wlan_support=1
-wifi.tethering.interface=wlan0
-wifi.interface=wlan0
-wifi.direct.interface=p2p0
-wifi.supplicant_scan_interval=180
-
-# Bluetooth / GPS / FM
-ro.mtk_bt_support=1
-ro.mtk_gps_support=1
-ro.mtk_agps_app=1
-fmradio.driver.enable=0
+# OpenGL ES 3.1 (Mali-T720 MP3)
+ro.opengles.version=196609
 
 # Tethering
 net.tethering.noprovisioning=true
 
-# Graphics
-# OpenGL ES 3.1 (Mali-T720 MP3)
-ro.opengles.version=196609
-# 320 dpi, panel not rotated.
-ro.sf.lcd_density=320
-ro.sf.hwrotation=0
-# Software navigation bar: the only front key is the fingerprint home button.
-qemu.hw.mainkeys=0
-debug.hwui.use_buffer_age=false
-# The Mali-T720 blob does not preserve the back buffer; HWUI partial updates
-# tear.
-debug.hwui.use_partial_updates=false
-
-# Media / DRM / camera
+# DRM (Widevine L3, 32-bit only)
 drm.service.enabled=true
-ro.mtk_widevine_drm_l3_support=1
-media.stagefright.legacyencoder=true
-media.stagefright.less-secure=true
-camera.disable_zsl_mode=1
 
-# USB
-ro.sys.usb.storage.type=mtp
-ro.sys.usb.mtp.whql.enable=0
-ro.sys.usb.bicr=no
-ro.sys.usb.charging.only=yes
-
-# Audio
-ro.camera.sound.forced=0
-ro.audio.silent=0
-ro.mtk_audio_ape_support=1
-# The legacy MTK audio HAL never sets get_capture_position. This opt-in guard
-# keeps the HAL wrapper from calling the uninitialised pointer on capture.
-ro.audio.legacy_hal_no_capture_position=1
-
-# Misc
-ro.zygote.preload.enable=0
-ro.kernel.zio=38,108,105,16
-# FRP
-ro.frp.pst=/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/frp
+# HWUI
+# Buffer age bootloops the M2 Note, which has the same SoC, GPU and HWC 1 stack.
+debug.hwui.use_buffer_age=false
