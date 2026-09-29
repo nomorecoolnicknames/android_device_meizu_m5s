@@ -40,8 +40,8 @@ cat >&2 <<MSG
            $want_ver
   найдено: $have_md5
            $have_ver
-Что делать (m5s): собрать ядро из worktree /srv/forge/android/m5s/kernel49
-(ветка forge/mt6753-49; скрипт /srv/forge/android/m5s/build_kernel49.sh),
+Что делать (m5s): собрать ядро из worktree M5s kernel49
+(ветка forge/mt6753-49; скрипт build_kernel49.sh),
 затем сложить gzip -n -9 от arch/arm64/boot/Image с байт-в-байт стоковым DTB
 m5s (stock/flyme/work/m5s_stock.dtb, 67170 Б, md5 9be87e7f…), положить сюда и
 обновить $EXP.  Приклеенный DTB проверяет tools/check_appended_dtb.sh.
