@@ -1,6 +1,6 @@
 # Meizu M5s (m5s)
 
-Device tree for the Meizu M5s for LineageOS 18.1.
+Device tree for the Meizu M5s for LineageOS 20.0.
 
 ## Specifications
 
@@ -17,7 +17,7 @@ Device tree for the Meizu M5s for LineageOS 18.1.
 
 - A complete ROM built from this branch has not been tested on the device.
 - Boot, display, touch, Bluetooth, mobile network, camera, audio, sensors, power: untested
-- Wi-Fi: untested
+- Wi-Fi: vendor HAL service not integrated; untested
 - GPS: service disabled until its vendor dependencies are resolved
 - Fingerprint: Goodix HAL not integrated
 - SELinux: permissive
@@ -26,7 +26,10 @@ Device tree for the Meizu M5s for LineageOS 18.1.
 ## Building
 
 ```sh
-repo init -u https://github.com/LineageOS/android.git -b lineage-18.1
+repo init -u https://github.com/LineageOS/android.git -b lineage-20.0
+# Add the local manifest from
+# https://github.com/nomorecoolnicknames/android_local_manifests_meizu (branch lineage-20.0)
+# to .repo/local_manifests/
 repo sync
 source build/envsetup.sh
 breakfast m5s
