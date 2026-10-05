@@ -10,8 +10,8 @@ Device configuration for **Meizu M5s (m5s, MT6753)**. Branch: **`lineage-16.0`**
 
 | Subsystem | Implementation / source | Source / integration | Working status |
 |---|---|---|---|
-| Boot / partitions | [Board configuration](BoardConfig.mk); [Kernel checksum](prebuilt-kernel/EXPECTED.txt) | External `Image.gz-dtb` prebuilt required | Not tested on this branch |
-| Display / composition | [MTK HWC](hwcomposer/forge_hwc.c) | HWC source; vendor gralloc/GPU libraries required | Not tested on this branch |
+| Boot / partitions | [Board configuration](BoardConfig.mk); [Kernel checksum](prebuilt-kernel/EXPECTED.txt) | Source-built native 3.18.19 `Image.gz-dtb` required | Not tested on this branch |
+| Display / composition | [MTK HWC](hwcomposer/forge_hwc.c) | Native 3.18 eight-layer UAPI; selected composer must be ELF64/AArch64; vendor gralloc/GPU libraries required | Not tested on this branch |
 | GPU | [Graphics packages and ABI integration](device.mk) | Vendor Mali userspace; kernel GPU driver lives in the kernel tree | Not tested on this branch |
 | Touch / buttons | [Input integration](device.mk) | Kernel input driver plus Android layouts | Not tested on this branch |
 | Wi-Fi | [MTK Wi-Fi integration](wpa_supplicant_8_lib/mediatek_driver_cmd_nl80211.c) | MTK transport / firmware and supplicant integration | Not tested on this branch |
@@ -25,12 +25,17 @@ Device configuration for **Meizu M5s (m5s, MT6753)**. Branch: **`lineage-16.0`**
 | Fingerprint | [Feature / service integration](device.mk) | Goodix vendor components need HAL integration | Enrollment and unlock not validated |
 | SELinux | [Security / boot settings](BoardConfig.mk) | Development configuration | Enforcing operation not validated |
 
+## Native kernel
+
+This branch selects the source-built MT6753 Linux 3.18.19 kernel at [`6a4373fd`](https://github.com/ReMeizu/android_kernel_meizu_mt6753/commit/6a4373fd09b75f1ca4025a9311a2c5b97cb810f6). Kernel source is on [`m5s-3.18-native`](https://github.com/ReMeizu/android_kernel_meizu_mt6753/tree/m5s-3.18-native); board config is `m5s_defconfig`. Own Yassy panel, FocalTech touch, DTB and ashmem are included in that kernel. This selection is separate from the experimental Linux 4.9 port.
+
 ## Building
 
 Use a matching LineageOS 16.0 source checkout, with this tree at `device/meizu/m5s`. Required inputs:
 
 - The matching vendor tree, firmware, board configuration files and platform compatibility changes. This repository alone is not a complete ROM checkout.
 - A board-specific `prebuilt-kernel/Image.gz-dtb` matching [EXPECTED.txt](prebuilt-kernel/EXPECTED.txt). The kernel binary is not included; [the checksum check](tools/check_prebuilt_kernel.sh) rejects a missing or different input.
+- The stock-derived `rootdir/init.mt6735.usb.rc` is a separate input whose redistribution terms have not been established here. The build selects legacy android_usb with FunctionFS for Pie ADB (`sys.usb.configfs=0`); generic Android init owns none/adb/accessory modes.
 - Referenced device files absent from this export, including `keylayout/ACCDET.kl`, `keylayout/fp-keys.kl`, `keylayout/gf-keys.kl`. Restore the matching inputs before building.
 
 With those inputs in place, the product is:
@@ -41,7 +46,7 @@ lunch lineage_m5s-userdebug
 mka bacon
 ```
 
-The broader Android 9 checkout passed build-graph preparation. Full ROM attempts reached their time limits; there is no completed, hardware-tested ROM from this published snapshot.
+The selected Android 9 checkout passes build-graph preparation. Full-ROM artifact acceptance and physical operation are still pending. Header checks for both ARM ABIs do not establish ARM32 ioctl compatibility; the selected native kernel forwards compat ioctl without structure translation, so the selected composer must be 64-bit.
 
 ## Next steps
 

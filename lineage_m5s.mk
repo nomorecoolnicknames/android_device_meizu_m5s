@@ -32,9 +32,6 @@ PRODUCT_BUILD_PROP_OVERRIDES += \
 # Pie: vendor/lineage does not default LINEAGE_BUILD from TARGET_DEVICE.
 LINEAGE_BUILD := m5s
 
-# The m5s shipped Flyme 6 on Android 6.0 (FACT: probe fingerprint
-# Meizu/meizu_M5s/M5s:6.0/MRA58K/1551951703) — the blobs are API 23.
-# Stage A: real vendor partition WITHOUT VNDK (see BoardConfig.mk).
 PRODUCT_SHIPPING_API_LEVEL := 23
 PRODUCT_FULL_TREBLE_OVERRIDE := false
 
@@ -45,8 +42,7 @@ PRODUCT_USE_PROFILE_FOR_BOOT_IMAGE := false
 
 PRODUCT_GMS_CLIENTID_BASE := android-meizu
 
-# Bring-up ADB defaults (m681/m5c pattern).  The first boot on E0 is headless
-# (no panel driver in 4.9 yet), so adb is the ONLY way in: keep it open.
+# Bring-up ADB defaults for first hardware validation.
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
     ro.secure=0 \
     ro.debuggable=1 \

@@ -1,32 +1,8 @@
 /*
- * forge_hwc — hwcomposer.mt6737m for the Meizu m5c on the forge 4.9 kernel.
- *
- * HWC1 (HWC_DEVICE_API_VERSION_1_1) facade over the NATIVE 4.9 mtk_disp_mgr
- * session ABI.  The vendor 3.18-built blob is broken against this kernel
- * (frames stall inside its internal queues, root cause never established);
- * this module replaces it with the minimal correct pipeline:
- *
- *   prepare(): every layer -> HWC_FRAMEBUFFER (SurfaceFlinger composes
- *              everything with GLES into the framebuffer target).
- *   set():     wait FBT acquire fence (the kernel does not consume
- *              src_fence_fd, verified: no reader outside compat conversion)
- *              -> PREPARE_INPUT_BUFFER(204)  ion_fd -> buff idx + release fence
- *              -> GET_PRESENT_FENCE(217)     -> retire fence + idx
- *              -> SET_INPUT_BUFFER(206)      native 12-layer struct, L0 only
- *              -> TRIGGER_SESSION(203)       with present_fence_idx
- *   vsync:     dedicated thread blocking in WAIT_FOR_VSYNC(213).
- *   blank():   FBIOBLANK on fb0 (mtkfb_blank -> primary_display_suspend/resume).
- *
- * Design note: everything version-specific to Android N lives in the thin
- * HWC1 facade at the bottom of this file; the engine (open/session/frame/
- * vsync/power) talks only to the kernel UAPI in disp_session_uapi.h and is
- * meant to be reused behind an HWC2 facade (or hwc2on1adapter) on the
- * LOS 15.1 -> 16 -> 18.1 ladder with this same 4.9 kernel.
- *
- * Buffer handles: ion fd and stride are queried through the vendor
- * libgralloc_extra.so (dlopen, plain C symbol, present in /system/lib{,64}).
- * Fallback when unavailable: fd = handle->data[0], stride = display width
- * (FACT p61: gralloc buffers for the 720-wide panel have pitch 2880 = 720*4).
+ * HWC1 framebuffer composition for the M5s native 3.18 display session ABI.
+ * Acquire/release fences, present-fence index, VSYNC and framebuffer power
+ * transitions use the matching disp_session_uapi.h definitions.
+ * SurfaceFlinger performs GLES composition; vendor gralloc remains required.
  */
 
 #define LOG_TAG "forge-hwc"
@@ -114,7 +90,7 @@ struct forge_hwc {
 	unsigned int trigger_fail;
 	unsigned int acquire_timeouts;
 	/*
-	 * forge fence-probe (2026-08-25, tear hunt).  Under a heavy scroll a
+	 * Fence diagnostics.  Under a heavy scroll a
 	 * HEALTHY pipeline must regularly reach set() before the GPU has
 	 * finished the buffers (acq_waited > 0 for a visible share of
 	 * planes).  If essentially every acquire fence is already signaled
@@ -122,7 +98,7 @@ struct forge_hwc {
 	 * that fast, the mali fences are firing early - SurfaceFlinger then
 	 * latches half-rendered buffers and the glass shows a stationary
 	 * horizontal stitch between two moments of motion, identical with
-	 * overlays on and off (matches p80).  Counters are in dump() and a
+	 * overlays on and off .  Counters are in dump() and a
 	 * summary goes to dmesg every 300 frames.
 	 */
 	unsigned int acq_presignaled;
@@ -220,8 +196,8 @@ static int engine_wait_fence(struct forge_hwc *hwc, int fd, int timeout_ms)
 
 static int engine_open_session(struct forge_hwc *hwc)
 {
-	struct disp_session_config cfg;
-	struct disp_session_info info;
+	disp_session_config cfg;
+	disp_session_info info;
 
 	memset(&cfg, 0, sizeof(cfg));
 	cfg.type = DISP_SESSION_PRIMARY;
@@ -310,7 +286,7 @@ static int map_hal_format(int hal_fmt)
  * 2-bit blend factor selectors).  PREMULT: out = src + (1-a_s)*dst ->
  * factors ONE / SRC_INVERT; COVERAGE: SRC / SRC_INVERT.
  */
-static void fill_blending(struct disp_input_config *c, int32_t blending)
+static void fill_blending(disp_input_config *c, int32_t blending)
 {
 	if (blending == 0x0105 /* HWC_BLENDING_PREMULT */) {
 		c->alpha_enable = 1;
@@ -332,7 +308,7 @@ static void fill_blending(struct disp_input_config *c, int32_t blending)
 }
 
 /*
- * forge-crc probe (2026-08-25): the OBJECTIVE tear detector at the content
+ * Frame CRC diagnostics: the tear detector at the content
  * level.  Once a plane is submitted, the buffer belongs to the display
  * until its release fence signals - NOTHING may legitimately write into
  * it.  So: signature 10 rows of every submitted buffer right after
@@ -438,7 +414,7 @@ static void engine_crc_probe(struct forge_hwc *hwc, struct fhwc_plane *planes,
 }
 
 /*
- * forge-shear probe (2026-08-27): objective tear detector for content that
+ * Frame shear diagnostics: tear detector for content that
  * is ALREADY torn inside the submitted buffer.  The fence counters and the
  * CRC probe proved nobody writes into a buffer after submit (presig is the
  * healthy N pattern - SF latches one vsync after queueBuffer - and 246 CRC
@@ -624,10 +600,10 @@ static void engine_shear_probe(struct forge_hwc *hwc, struct fhwc_plane *planes,
 static int engine_submit(struct forge_hwc *hwc, struct fhwc_plane *planes,
 			 int n, int *retire_fence)
 {
-	struct disp_buffer_info buf;
-	struct disp_present_fence pf;
-	struct disp_session_input_config *in;
-	struct disp_session_config trig;
+	disp_buffer_info buf;
+	disp_present_fence pf;
+	disp_session_input_config *in;
+	disp_session_config trig;
 	int i, k, ret;
 
 	*retire_fence = -1;
@@ -697,12 +673,10 @@ static int engine_submit(struct forge_hwc *hwc, struct fhwc_plane *planes,
 	for (i = 0; i < 4; i++) {
 		in->config[i].layer_id = (uint8_t)i;
 		in->config[i].layer_enable = 0;
-		in->config[i].src_fence_fd = -1;
-		in->config[i].ext_sel_layer = -1;
 	}
 
 	for (k = 0; k < n; k++) {
-		struct disp_input_config *c = &in->config[k];
+		disp_input_config *c = &in->config[k];
 		struct fhwc_plane *p = &planes[k];
 		int ion_fd = -1;
 		int stride_px = (int)hwc->width;
@@ -759,7 +733,7 @@ static int engine_submit(struct forge_hwc *hwc, struct fhwc_plane *planes,
 		c->layer_enable = 1;
 		c->buffer_source = DISP_BUFFER_ION;
 		c->security = DISP_NORMAL_BUFFER;
-		c->src_fmt = (enum DISP_FORMAT)p->fmt;
+		c->src_fmt = (DISP_FORMAT)p->fmt;
 		c->next_buff_idx = buf.index;
 		c->src_pitch = (uint16_t)stride_px;
 		c->src_offset_x = p->sx;
@@ -823,7 +797,7 @@ static int engine_submit(struct forge_hwc *hwc, struct fhwc_plane *planes,
 	return 0;
 
 fail:
-	if (pf.present_fence_fd >= 0)
+	if ((int)pf.present_fence_fd >= 0)
 		close(pf.present_fence_fd);
 	for (k = 0; k < n; k++) {
 		if (planes[k].release_fd >= 0) {
@@ -837,7 +811,7 @@ fail:
 static void *vsync_thread_fn(void *arg)
 {
 	struct forge_hwc *hwc = arg;
-	struct disp_session_vsync_config vs;
+	disp_session_vsync_config vs;
 	struct timespec ts_now;
 	int64_t ts, last_ts = 0;
 
@@ -1245,7 +1219,7 @@ static int fhwc_get_display_attributes(hwc_composer_device_1_t *dev, int disp,
 static int fhwc_close(hw_device_t *dev)
 {
 	struct forge_hwc *hwc = (struct forge_hwc *)dev;
-	struct disp_session_config cfg;
+	disp_session_config cfg;
 
 	pthread_mutex_lock(&hwc->lock);
 	hwc->stop = 1;

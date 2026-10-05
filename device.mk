@@ -1,28 +1,13 @@
 LOCAL_PATH := device/meizu/m5s
 
-# Device makefile for the Meizu M5s on LineageOS 16.0.  Donor: device/meizu/m5c
-# @77e62e0; every block below says what was kept, what changed for the m5s and
-# on which evidence.  Nothing here has run on the device (README.md).
 
-# Vendor blobs: vendor/meizu/m5s (a9-trees/m5s/vendor/meizu/m5s).  The list is
-# generated from the stock-extracted LOS 15.1 set by
-# meizu-fleet/tools/a9-gen-vendor-blobs.py; its header names every file that
-# goes to /system instead of /vendor (hard-coded /system paths, FACT by strings)
-# and every file left out (hwcomposer / keystore / gatekeeper / RIL pair).
-# Hard inherit (not -if-exists, as in the m5c donor): if the vendor tree or its
-# proprietary/ mount is missing, the build must stop, not ship without blobs.
 $(call inherit-product, vendor/meizu/m5s/m5s-vendor.mk)
 
 PRODUCT_DEVICE := m5s
 
-# Screen: 720x1280, 320 dpi (FACT, probe/display.txt + probe/getprop.txt) -> xhdpi.
 PRODUCT_AAPT_CONFIG := normal
 PRODUCT_AAPT_PREF_CONFIG := xhdpi
 
-# Dalvik heap, set explicitly (m95 lesson: a wrong inherit-if-exists path left
-# the 16 MB default and system_server OOMed).  3 GB RAM (FACT, probe/meminfo.txt
-# via M5S_RECON); growth limit 256m is the LOS 15.1 m5s value, the rest is the
-# m5c set that boots LOS 16.
 PRODUCT_PROPERTY_OVERRIDES += \
     dalvik.vm.heapstartsize=8m \
     dalvik.vm.heapgrowthlimit=256m \
@@ -42,7 +27,6 @@ endif
 # That set is N-era MT6737M (m5c 14.1 lineage) and is what reached
 # boot_completed on Pie with a 4.9 kernel — the same kernel line as the m5s E0.
 # It was NOT diffed line by line against the m5s stock (M) init.mt6735.rc;
-# the stock services missing from it are listed in README.md §rc.
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/fstab.mt6735:root/fstab.mt6735 \
     $(LOCAL_PATH)/rootdir/init.mt6735.rc:root/init.mt6735.rc \
@@ -58,7 +42,6 @@ PRODUCT_COPY_FILES += \
 
 # Keylayouts — the m5s's OWN stock set (vendor/usr/keylayout of the stock
 # extraction; the generator leaves them out of the blob list so there is one
-# rule per target).  FACT, probe/input_devices.txt: ACCDET, fp-keys, mtk-kpd,
 # mtk-tpd are the live input devices; gf-keys is the Goodix FP key map.
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/keylayout/ACCDET.kl:system/usr/keylayout/ACCDET.kl \
@@ -71,12 +54,6 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/seccomp/mediacodec.policy:$(TARGET_COPY_OUT_VENDOR)/etc/seccomp_policy/mediacodec.policy
 
-# Permission xmls — hardware that EXISTS on the m5s (FACT: probe/camera.txt
-# "Number of camera devices: 2"; M1612_DCT_ANALYSIS.md: MC3410 accel,
-# PA22x ALS/PS, QMC983x compass, no gyroscope — itg1010 node present, driver
-# not bound).  Fingerprint (Goodix) exists but its HAL is not wired in this
-# tree, so the feature is not declared (a declared feature without a HAL is a
-# broken Settings wizard).
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/handheld_core_hardware.xml:system/etc/permissions/handheld_core_hardware.xml \
     frameworks/native/data/etc/android.hardware.bluetooth.xml:system/etc/permissions/android.hardware.bluetooth.xml \
@@ -103,12 +80,6 @@ PRODUCT_PACKAGES += \
     vndservicemanager \
     servicemanager
 
-# Graphics (m5c stage 3).  hwcomposer.mt6753 is forge_hwc (HWC1.1) built from
-# device/meizu/m5s/hwcomposer under the platform name; the stock
-# hwcomposer.mt6753.so blob is left out of the vendor list on purpose — on the
-# m5c the stock HWC hung on the 4.9 kernel and a PRODUCT_COPY_FILES blob
-# silently shadows a same-named module (black screen, m5c 0adcdd8).
-# FACT: forge_hwc's disp_session_uapi.h == kernel49's disp_session.h byte for byte.
 PRODUCT_PACKAGES += \
     hwcomposer.mt6753 \
     android.hardware.graphics.composer@2.1-impl \
@@ -118,24 +89,14 @@ PRODUCT_PACKAGES += \
     android.hardware.graphics.mapper@2.0-impl \
     libhwc2on1adapter
 
-# Keymaster: the AOSP 3.0 software implementation (m5c: keystore aborted with
-# "no viable keymaster device" without it).  The stock keystore.mt6753.so /
-# gatekeeper.mt6753.so are TEE-backed (MicroTrust teei_daemon in the stock
-# ramdisk) and are left out of the vendor list so hw_get_module cannot pick
-# them up without a TEE — HYPOTHESIS, see README.md.
 PRODUCT_PACKAGES += \
     android.hardware.keymaster@3.0-impl \
     android.hardware.keymaster@3.0-service
 
-# USB/adb under Pie (m5c 2026-08-29): the only prop file early init loads on
-# this no-first-stage-mount layout is /system/build.prop, so the configfs
-# knobs go here.  sys.usb.controller=musb-hdrc is the UDC name of the MTK 4.9
-# musb driver on the m5c (/sys/class/udc, FACT there); the E0 kernel carries
-# the same driver — INFERENCE, first thing to read on the m5s: ls /sys/class/udc.
+# Pie adbd uses FunctionFS through the native 3.18 android_usb gadget.
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.zygote=zygote64_32 \
-    sys.usb.configfs=1 \
-    sys.usb.controller=musb-hdrc \
+    sys.usb.configfs=0 \
     persist.sys.usb.config=adb \
     sys.usb.ffs.aio_compat=1 \
     pm.dexopt.first-boot=quicken \
@@ -146,13 +107,12 @@ PRODUCT_PROPERTY_OVERRIDES += \
     pm.dexopt.inactive=verify \
     pm.dexopt.shared=speed
 
-# Device half of the Pie configfs gadget + zygote services + cpuset masks.
+# Zygote services and cpuset masks; legacy USB is imported by init.mt6735.rc.
 PRODUCT_COPY_FILES += \
-    device/meizu/m5s/rootdir/forge-usb-gadget.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/forge-usb-gadget.rc \
     device/meizu/m5s/rootdir/forge-zygote.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/forge-zygote.rc \
     device/meizu/m5s/rootdir/forge-cpuset.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/forge-cpuset.rc
 
-# Bluetooth: the AOSP passthrough impl dlopens libbt-vendor.so.  FACT: the m5s
+# Bluetooth: the AOSP passthrough impl dlopens libbt-vendor.so.  the m5s
 # ships it 32-bit only (stock /system/lib/libbt-vendor.so, sha256 70a3ff31...,
 # exports BLUETOOTH_VENDOR_LIB_INTERFACE, NEEDED libbluetooth_mtk.so) — the
 # m5c situation exactly, so the m5c answer is kept: a 32-bit HIDL service
@@ -160,14 +120,14 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     android.hardware.bluetooth@1.0-impl
 
-# libnvram.so of this blob set has DT_NEEDED libfs_mgr.so (FACT, readelf, both
+# libnvram.so of this blob set has DT_NEEDED libfs_mgr.so (readelf, both
 # ABIs); Pie builds libfs_mgr only static, so nvram_daemon would die at the
 # linker and stall the modem chain (m5c/m95 shim).
 PRODUCT_PACKAGES += \
     libfs_mgr_m5s_shim
 
 # Modem bring-up chain as a vendor rc (m5c forge-modem.rc; every binary it
-# names exists in the m5s set — FACT, ls vendor/bin: nvram_daemon, ccci_fsd,
+# names exists in the m5s set — ls vendor/bin: nvram_daemon, ccci_fsd,
 # ccci_mdinit, gsm0710muxd, muxreport, terservice).
 PRODUCT_COPY_FILES += \
     device/meizu/m5s/rootdir/forge-modem.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/forge-modem.rc
@@ -178,8 +138,7 @@ PRODUCT_COPY_FILES += \
 
 # GNSS: the STOCK legacy gps.mt6753.so behind the AOSP gnss@1.0 passthrough.
 # NOT the m5c source HAL: that one speaks the Gen-N mtk_hal2mnl socket, and
-# the m5s mnld is M-era (FACT: strings mnld | grep -c mtk_hal2mnl = 0).
-# ro.hardware.gps=mt6753 (system.prop, FACT probe) selects the module.
+# the m5s mnld is M-era (strings mnld | grep -c mtk_hal2mnl = 0).
 PRODUCT_PACKAGES += \
     android.hardware.gnss@1.0-impl \
     android.hardware.gnss@1.0-service
@@ -187,9 +146,6 @@ PRODUCT_PACKAGES += \
 # Peripheral HALs (Wi-Fi, sensors, lights, vibrator, camera, audio, BT).
 $(call inherit-product, device/meizu/m5s/forge-peripherals.mk)
 
-# Telephony: MTK Oreo HIDL rild + libril from vendor/mediatek/ril (m5c stage 4;
-# BoardConfig.mk says why).  The stock RIL pair is pinned as modules in
-# vendor/meizu/m5s/Android.mk because the MTK libril links them by name.
 ENABLE_VENDOR_RIL_SERVICE := true
 PRODUCT_PACKAGES += \
     rild \

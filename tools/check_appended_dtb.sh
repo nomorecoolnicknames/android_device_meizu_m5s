@@ -1,78 +1,14 @@
-#!/bin/bash
-# Validate the appended stock M5s DTB in a gzip Image.gz-dtb.
-# Its MMC compatible is mediatek,mt6753-mmc, not mediatek,msdc.
-# The raw Image is rejected because driver strings would produce false matches.
-# Usage: check_appended_dtb.sh IMAGE [EXPECTED_DTB_MD5]
-set -u
-
-STOCK_MD5=9be87e7f729537994a50eebe9a836d71
-
-IMG=${1:-}
-WANT=${2:-$STOCK_MD5}
-
-if [ -z "$IMG" ] || [ ! -f "$IMG" ]; then
-    echo "usage: $0 <Image.gz-dtb> [expected-dtb-md5]" >&2
-    exit 2
-fi
-
-python3 - "$IMG" "$WANT" <<'PY'
-import hashlib, sys
-
-img, want = sys.argv[1], sys.argv[2]
-data = open(img, 'rb').read()
-MAGIC = bytes.fromhex('d00dfeed')
-
-if data[:2] != b'\x1f\x8b':
-    print("НЕ ТОТ ВХОД: %s не начинается с gzip-сигнатуры 1f 8b." % img)
-    print("Гейт применяется к Image.gz-dtb, а не к сырому Image и не к boot.img.")
-    print("Для boot.img сначала достаньте ядро, потом проверяйте его.")
-    sys.exit(2)
-
-found = []
-i = data.find(MAGIC)
-while i != -1:
-    total = int.from_bytes(data[i + 4:i + 8], 'big')
-    version = int.from_bytes(data[i + 20:i + 24], 'big')
-    if 1000 < total <= len(data) - i and 1 <= version <= 17:
-        found.append((i, total))
-    i = data.find(MAGIC, i + 1)
-
-if not found:
-    print("ОШИБКА: в %s нет приклеенного DTB (магии d00dfeed не найдено)" % img)
-    sys.exit(1)
-
-if len(found) > 1:
-    print("ВНИМАНИЕ: найдено %d кандидатов DTB, проверяю первый" % len(found))
-
-off, total = found[0]
-blob = data[off:off + total]
-got = hashlib.md5(blob).hexdigest()
-print("образ  : %s (%d байт)" % (img, len(data)))
-print("dtb    : off=%d size=%d" % (off, total))
-print("md5    : %s" % got)
-print("sha256 : %s" % hashlib.sha256(blob).hexdigest())
-print("ожидаю : %s" % want)
-
-stock_key = blob.count(b"mt6753-mmc")
-built_key = blob.count(b"mediatek,msdc\x00")
-print("ключ   : mt6753-mmc=%d  mediatek,msdc=%d" % (stock_key, built_key))
-structural_ok = stock_key > 0 and built_key == 0
-
-if got == want and structural_ok:
-    print("OK — приклеен ожидаемый стоковый DTB m5s")
-    sys.exit(0)
-if got == want and not structural_ok:
-    print("ОТКАЗ — md5 совпал, но в DTB нет имени eMMC, которое ищет драйвер.")
-    sys.exit(1)
-if got != want and structural_ok:
-    print("ВНИМАНИЕ — md5 не совпал, но структурно DTB стоковый.")
-    print("Сверяйте вручную; сток мог законно смениться.")
-    sys.exit(1)
-print("ОТКАЗ — приклеен НЕ тот DTB, использовать НЕЛЬЗЯ")
-print()
-print("Починить, не пересобирая ядро:")
-print("  cat <дерево>/arch/arm64/boot/Image.gz \\")
-print("      <path-to-stock-m5s.dtb> \\")
-print("      > %s.STOCKDTB" % img)
-sys.exit(1)
+#!/bin/sh
+set -eu
+[ "$#" -eq 1 ] || { echo "usage: $0 <selected-M5s-Image.gz-dtb>" >&2; exit 2; }
+python3 - "$1" <<'PY'
+import hashlib,struct,sys,zlib
+if not __debug__: raise RuntimeError('Optimized Python disables kernel guards')
+b=open(sys.argv[1],'rb').read()
+assert hashlib.sha256(b).hexdigest()=='4fb656867aaa4b0bfd03125b9ca8b5b873f381e70fab557615c8ded0a26a5107'
+d=zlib.decompressobj(16+zlib.MAX_WBITS);raw=d.decompress(b);assert d.eof
+dtb=d.unused_data
+assert dtb[:4]==bytes.fromhex('d00dfeed') and struct.unpack_from('>I',dtb,4)[0]==len(dtb)
+assert hashlib.sha256(dtb).hexdigest()=='f9e7c32cff0a2da3f8c39859e71906413305430132f8350af94b41312f7d4c8e'
+print('Selected source-built M5s image and own compiled DTB verified; runtime unverified')
 PY

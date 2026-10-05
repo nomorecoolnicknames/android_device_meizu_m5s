@@ -1,13 +1,4 @@
-# forge_hwc: replacement hwcomposer, m5c source, built as hwcomposer.mt6753 for
-# the m5s (4.9 E0 kernel; FACT: disp_session_uapi.h == kernel49 disp_session.h).
-# The vendor hwcomposer.mt6737m.so (built for 3.18) stalls frames against
-# this kernel; keep it renamed to .forgebak and install this module instead.
-#
-# disp_session_uapi.h must stay a byte-for-byte copy of
-#   kernel-m5c-4.9-lc/drivers/misc/mediatek/video/include/disp_session.h
-# (the _IOW numbers encode struct sizes; a drifted copy silently changes
-# the ioctl numbers — the exact failure class p47..p69 were about).
-
+# HWC1 implementation using the matching native 3.18 display-session UAPI.
 LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
