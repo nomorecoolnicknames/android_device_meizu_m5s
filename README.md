@@ -46,6 +46,8 @@ lunch lineage_m5s-userdebug
 mka bacon
 ```
 
+The HWC source uses the native 3.18 panel dimensions in millimetres, with matching DPI conversion and a fallback for unspecified panel dimensions. The full HWC C source compiled to ARM and AArch64 objects with the selected Android compiler commands; linking and runtime operation remain unverified.
+
 The selected Android 9 checkout passes build-graph preparation. Full-ROM artifact acceptance and physical operation are still pending. Header checks for both ARM ABIs do not establish ARM32 ioctl compatibility; the selected native kernel forwards compat ioctl without structure translation, so the selected composer must be 64-bit.
 
 ## Next steps

@@ -232,11 +232,12 @@ static int engine_open_session(struct forge_hwc *hwc)
 		hwc->vsync_period_ns = 1000000000u / info.vsyncFPS;
 	else
 		hwc->vsync_period_ns = 16666666u;
-	if (info.physicalWidthUm && info.physicalHeightUm) {
+	/* Native 3.18 panel dimensions are millimetres, matching fb_var.width/height. */
+	if (info.physicalWidth && info.physicalHeight) {
 		hwc->xdpi_1000 = (unsigned int)
-		    ((uint64_t)info.displayWidth * 25400000ULL / info.physicalWidthUm);
+		    ((uint64_t)info.displayWidth * 25400ULL / info.physicalWidth);
 		hwc->ydpi_1000 = (unsigned int)
-		    ((uint64_t)info.displayHeight * 25400000ULL / info.physicalHeightUm);
+		    ((uint64_t)info.displayHeight * 25400ULL / info.physicalHeight);
 	}
 	if (!hwc->xdpi_1000)
 		hwc->xdpi_1000 = hwc->ydpi_1000 =
